@@ -19,7 +19,7 @@ services:
         labels:
             - "traefik.enable=true"
             - "traefik.http.routers.lm_app_laravel.rule=Host(`lm-app.f-org-e.systems`)"
-            - "traefik.http.routers.lm_app_laravel.entrypoints=web-secured"
+            - "traefik.http.routers.lm_app_laravel.entrypoints=web"
             - "traefik.http.routers.lm_app_laravel.tls=true"
             - "traefik.http.routers.lm_app_laravel.tls.certresolver=cloudflare"
             - "traefik.http.services.lm_app_laravel.loadbalancer.server.port=80"
