@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('owner_id');
             $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('path');
+            $table->string('name');
             $table->enum('type', ['pdf', 'markdown']);
             $table->timestamps();
         });
