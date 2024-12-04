@@ -13,7 +13,7 @@ class ScoresController extends Controller
      */
     public function index()
     {
-        return Scores::all();
+        return Scores::with('user')->get();
     }
 
     /**

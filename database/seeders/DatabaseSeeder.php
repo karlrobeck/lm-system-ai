@@ -18,7 +18,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory([
+            'email' => "testuser@gmail.com",
+            'password' => "testpassword"
+        ])->create();
         // visualization
         $visualization_context_file = Files::factory([
             'owner_id' => $user->id,

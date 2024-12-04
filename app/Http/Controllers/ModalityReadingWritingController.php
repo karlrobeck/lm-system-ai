@@ -13,7 +13,7 @@ class ModalityReadingWritingController extends Controller
      */
     public function index()
     {
-        return ModalityReadingWriting::all();
+        return ModalityReadingWriting::with('context_file')->get();
     }
 
     /**
@@ -30,7 +30,7 @@ class ModalityReadingWritingController extends Controller
      */
     public function show(string $id)
     {
-        return ModalityReadingWriting::find($id);
+        return ModalityReadingWriting::with('context_file')->find($id);
     }
 
     /**

@@ -13,7 +13,7 @@ class ModalityAuditoryController extends Controller
      */
     public function index()
     {
-        return ModalityAuditory::all();
+        return ModalityAuditory::with('context_file')->with('audio_file')->get();
     }
 
     /**

@@ -9,4 +9,9 @@ class ModalityReadingWriting extends Model
 {
     /** @use HasFactory<\Database\Factories\ModalityReadingWritingFactory> */
     use HasFactory;
+
+    public function context_file()
+    {
+        return $this->hasOne(Files::class, 'id', 'context_file_id');
+    }
 }

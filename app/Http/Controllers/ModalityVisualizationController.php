@@ -13,7 +13,7 @@ class ModalityVisualizationController extends Controller
      */
     public function index()
     {
-        return ModalityVisualization::all();
+        return ModalityVisualization::with('context_file')->with('image_file')->get();
     }
 
     /**

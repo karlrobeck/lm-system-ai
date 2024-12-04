@@ -13,7 +13,8 @@ class FilesController extends Controller
      */
     public function index()
     {
-        return Files::all();
+        $files = Files::with('user')->get();
+        return $files;
     }
 
     /**

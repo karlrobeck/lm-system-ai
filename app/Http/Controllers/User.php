@@ -12,7 +12,7 @@ class User extends Controller
      */
     public function index()
     {
-        return ModelsUser::all();
+        return ModelsUser::with('files')->with('scores')->get();
     }
 
     /**
