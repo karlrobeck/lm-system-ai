@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('modality_visualizations', function (Blueprint $table) {
             $table->id();
+            $table->enum('test_type', ['pre', 'post']);
             $table->unsignedBigInteger('image_file_id');
             $table->foreign('image_file_id')->references('id')->on('files')->onDelete('cascade');
             $table->string('question');

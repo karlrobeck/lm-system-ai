@@ -22,6 +22,7 @@ class ModalityVisualizationFactory extends Factory
             'choices' => json_encode($this->faker->sentences(4)),
             'correct_answer' => $this->faker->sentence(),
             'context_file_id' => $this->faker->randomDigitNot(0),
+            'test_type' => $this->faker->randomElement(['pre', 'post']),
         ];
     }
 }

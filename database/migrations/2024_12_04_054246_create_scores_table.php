@@ -11,14 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('modality_reading_writings', function (Blueprint $table) {
+        Schema::create('scores', function (Blueprint $table) {
             $table->id();
             $table->enum('test_type', ['pre', 'post']);
-            $table->enum('mode', ['reading', 'writing']);
-            $table->string('question');
-            $table->string('context_answer');
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->unsignedBigInteger('context_file_id');
             $table->foreign('context_file_id')->references('id')->on('files');
+            $table->enum('modality', ['visualization', 'reading-writing', 'auditory']);
+            $table->integer('score');
+            $table->integer('total');
+            $table->integer('correct');
+            $table->integer('incorrect');
             $table->timestamps();
         });
     }
@@ -28,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('modality_reading_writings');
+        Schema::dropIfExists('scores');
     }
 };

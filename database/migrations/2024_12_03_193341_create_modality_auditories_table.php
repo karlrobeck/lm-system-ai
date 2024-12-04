@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('modality_auditories', function (Blueprint $table) {
             $table->id();
+            $table->enum('test_type', ['pre', 'post']);
             $table->unsignedBigInteger('audio_file_id');
             $table->foreign('audio_file_id')->references('id')->on('files')->onDelete('cascade');
             $table->string('correct_answer');

@@ -20,6 +20,7 @@ class ModalityReadingWritingFactory extends Factory
             'mode' => $this->faker->randomElement(['reading', 'writing']),
             'question' => $this->faker->sentence(),
             'context_answer' => $this->faker->sentence(),
+            'test_type' => $this->faker->randomElement(['pre', 'post']),
         ];
     }
 }
