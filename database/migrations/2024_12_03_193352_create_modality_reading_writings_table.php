@@ -16,6 +16,8 @@ return new class extends Migration
             $table->enum('mode', ['reading', 'writing']);
             $table->string('question');
             $table->string('context_answer');
+            $table->unsignedBigInteger('context_file_id');
+            $table->foreign('context_file_id')->references('id')->on('files');
             $table->timestamps();
         });
     }
