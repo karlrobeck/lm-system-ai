@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "jsx": "preserve",
+        "jsxImportSource": "solid-js",
+        "baseUrl": ".",
+        "paths": {
+            "~/*": [
+                "./resources/js/*"
+            ]
+        },
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "esModuleInterop": true,
+    }
+}

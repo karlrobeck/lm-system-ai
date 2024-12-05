@@ -29,7 +29,7 @@ class User extends Controller
      */
     public function show(string $id)
     {
-        return ModelsUser::find($id);
+        return ModelsUser::with('files')->with('scores')->find($id);
     }
 
     /**

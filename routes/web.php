@@ -9,10 +9,14 @@ use App\Http\Controllers\ScoresController;
 use Illuminate\Support\Facades\Route;
 
 Route::apiResources([
-    'users' => User::class,
-    'files' => FilesController::class,
-    'modality/visualizations' => ModalityVisualizationController::class,
-    'modality/reading-writing' => ModalityReadingWritingController::class,
-    'modality/auditory' => ModalityAuditoryController::class,
-    'scores' => ScoresController::class,
+    'api/users' => User::class,
+    'api/files' => FilesController::class,
+    'api/modality/visualizations' => ModalityVisualizationController::class,
+    'api/modality/reading-writing' => ModalityReadingWritingController::class,
+    'api/modality/auditory' => ModalityAuditoryController::class,
+    'api/scores' => ScoresController::class,
 ]);
+
+Route::fallback(function () {
+    return view('client');
+});
