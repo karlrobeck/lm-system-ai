@@ -65,7 +65,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
                             </SidebarMenu>
                         </SidebarGroup>
                     </SidebarContent>
-                    <SidebarFooter class="flex flex-row gap-2.5 items-center">
+                    <SidebarFooter class="flex flex-row gap-2.5 items-center justify-between">
                         <Avatar>
                             <AvatarFallback>
                                 {user().name.split(" ")
