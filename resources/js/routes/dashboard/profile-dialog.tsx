@@ -1,5 +1,12 @@
 import { User } from "lucide-solid";
-import { Component, createResource, Show } from "solid-js";
+import {
+    Component,
+    createResource,
+    createSignal,
+    Match,
+    Show,
+    Switch,
+} from "solid-js";
 import { getUserById } from "~/api/user";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
@@ -23,13 +30,14 @@ import {
 
 const ProfileDialog: Component<{}> = (props) => {
     const [user] = createResource(1, async (id: number) => getUserById(id));
+    const [updatePassword, setUpdatePassword] = createSignal(true);
 
     return (
         <Dialog>
-            <Show when={user.state === "ready"} fallback={<>Loading...</>}>
+            <Show when={user.state === "ready"}>
                 <DialogTrigger
                     id="profile-dialog"
-                    class="flex flex-row gap-2.5"
+                    class="hidden"
                 />
                 <DialogContent class="max-w-7xl">
                     <DialogHeader>
@@ -98,19 +106,65 @@ const ProfileDialog: Component<{}> = (props) => {
                                         Update your password
                                     </span>
                                 </div>
-                                <div class="grid grid-cols-3 gap-2.5">
-                                    <Input
-                                        type="password"
-                                        placeholder="Old password"
-                                    />
-                                    <Input
-                                        type="password"
-                                        placeholder="New password"
-                                    />
-                                    <Input
-                                        type="password"
-                                        placeholder="Confirm password"
-                                    />
+                                <div class="grid grid-cols-4 gap-2.5">
+                                    <Button
+                                        variant="outline"
+                                        onClick={() =>
+                                            setUpdatePassword((prev) => !prev)}
+                                    >
+                                        Update password
+                                    </Button>
+                                    <div>
+                                        <Switch>
+                                            <Match when={!updatePassword()}>
+                                                <Input
+                                                    type="password"
+                                                    placeholder="Old password"
+                                                />
+                                            </Match>
+                                            <Match when={updatePassword()}>
+                                                <Input
+                                                    type="password"
+                                                    placeholder="Old password"
+                                                    disabled
+                                                />
+                                            </Match>
+                                        </Switch>
+                                    </div>
+                                    <div>
+                                        <Switch>
+                                            <Match when={!updatePassword()}>
+                                                <Input
+                                                    type="password"
+                                                    placeholder="New password"
+                                                />
+                                            </Match>
+                                            <Match when={updatePassword()}>
+                                                <Input
+                                                    type="password"
+                                                    placeholder="New password"
+                                                    disabled
+                                                />
+                                            </Match>
+                                        </Switch>
+                                    </div>
+                                    <div>
+                                        <Switch>
+                                            <Match when={!updatePassword()}>
+                                                <Input
+                                                    type="password"
+                                                    placeholder="Confirm password"
+                                                />
+                                            </Match>
+                                            <Match when={updatePassword()}>
+                                                <Input
+                                                    type="password"
+                                                    placeholder="Confirm password"
+                                                    disabled
+                                                />
+                                            </Match>
+                                        </Switch>
+                                    </div>
                                 </div>
                             </div>
                         </div>

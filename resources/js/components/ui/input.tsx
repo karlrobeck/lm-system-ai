@@ -1,10 +1,10 @@
-import { Component, JSX } from "solid-js";
+import { Component, JSX, mergeProps } from "solid-js";
 import { cn } from "~/lib/utils";
 
 const Input: Component<{} & JSX.InputHTMLAttributes<HTMLInputElement>> = (
     props,
 ) => {
-    const { ...rest } = props;
+    const { ...rest } = mergeProps(props);
 
     return (
         <input

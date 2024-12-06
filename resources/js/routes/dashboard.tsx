@@ -5,6 +5,7 @@ import {
     LogOut,
     Moon,
     Palette,
+    Plus,
     Settings2,
     Sun,
     User,
@@ -43,9 +44,10 @@ import {
     DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
-import ProfileDialog from "./dashboard/profile";
+import ProfileDialog from "./dashboard/profile-dialog";
 import { useColorMode } from "@kobalte/core";
 import { Skeleton } from "~/components/ui/skeleton";
+import UploadDialog from "./dashboard/upload-dialog";
 
 const DashboardLayout = (props: RouteSectionProps) => {
     const { setColorMode } = useColorMode();
@@ -54,12 +56,44 @@ const DashboardLayout = (props: RouteSectionProps) => {
     return (
         <SidebarProvider>
             <Sidebar>
-                <SidebarHeader>
+                <SidebarHeader class="border-b">
                     <h4 class="heading-4">
                         App Title
                     </h4>
                 </SidebarHeader>
                 <SidebarContent>
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Navigation</SidebarGroupLabel>
+                        <SidebarMenu>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    onClick={() => {
+                                        const dialog = document
+                                            .getElementById(
+                                                "upload-dialog",
+                                            )! as HTMLButtonElement;
+                                        dialog.click();
+                                    }}
+                                >
+                                    <Plus size={16} />
+                                    <p class="truncate">
+                                        Upload file
+                                    </p>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                            <SidebarMenuItem>
+                                <SidebarMenuButton
+                                    as={A}
+                                    href="/dashboard"
+                                >
+                                    <FileText size={16} />
+                                    <p class="truncate">
+                                        Scores
+                                    </p>
+                                </SidebarMenuButton>
+                            </SidebarMenuItem>
+                        </SidebarMenu>
+                    </SidebarGroup>
                     <SidebarGroup>
                         <SidebarGroupLabel>Your files</SidebarGroupLabel>
                         <SidebarMenu>
@@ -162,6 +196,9 @@ const DashboardLayout = (props: RouteSectionProps) => {
                                     <User size={16} /> Profile
                                 </DropdownMenuItem>
                                 <DropdownMenuSeparator />
+                                <DropdownMenuLabel>
+                                    Settings
+                                </DropdownMenuLabel>
                                 <DropdownMenuSub overlap>
                                     <DropdownMenuSubTrigger class="gap-2">
                                         <Palette size={16} />Theme
@@ -192,6 +229,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
                         </DropdownMenu>
                     </Show>
                     <ProfileDialog />
+                    <UploadDialog />
                 </SidebarFooter>
             </Sidebar>
             <main class="w-full">
