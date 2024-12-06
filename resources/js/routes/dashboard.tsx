@@ -1,5 +1,13 @@
 import { A, RouteSectionProps } from "@solidjs/router";
-import { FileText, LogOut, Settings2, User } from "lucide-solid";
+import {
+    FileText,
+    LogOut,
+    Moon,
+    Palette,
+    Settings2,
+    Sun,
+    User,
+} from "lucide-solid";
 import { createResource, For, Show } from "solid-js";
 import { getUserById } from "~/api/user";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
@@ -27,11 +35,18 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
+    DropdownMenuPortal,
     DropdownMenuSeparator,
+    DropdownMenuSub,
+    DropdownMenuSubContent,
+    DropdownMenuSubTrigger,
     DropdownMenuTrigger,
 } from "~/components/ui/dropdown-menu";
+import ProfileDialog from "./dashboard/profile";
+import { useColorMode } from "@kobalte/core";
 
 const DashboardLayout = (props: RouteSectionProps) => {
+    const { setColorMode } = useColorMode();
     const [user] = createResource(1, async (id: number) => getUserById(id));
 
     return (
@@ -39,9 +54,9 @@ const DashboardLayout = (props: RouteSectionProps) => {
             <Show when={user.state === "ready"}>
                 <Sidebar>
                     <SidebarHeader>
-                        <h3 class="text-xl font-bold">
+                        <h4 class="heading-4">
                             App Title
-                        </h3>
+                        </h4>
                     </SidebarHeader>
                     <SidebarContent>
                         <SidebarGroup>
@@ -90,16 +105,47 @@ const DashboardLayout = (props: RouteSectionProps) => {
                                 </Tooltip>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                                <DropdownMenuLabel>Settings</DropdownMenuLabel>
-                                <DropdownMenuItem>
-                                    <User size={16} />
-                                    Profile
+                                <DropdownMenuLabel>General</DropdownMenuLabel>
+                                <DropdownMenuItem
+                                    onClick={() => {
+                                        const dialog = document.getElementById(
+                                            "profile-dialog",
+                                        )! as HTMLButtonElement;
+                                        dialog.click();
+                                    }}
+                                >
+                                    <User size={16} /> Profile
                                 </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuSub overlap>
+                                    <DropdownMenuSubTrigger class="gap-2">
+                                        <Palette size={16} />Theme
+                                    </DropdownMenuSubTrigger>
+                                    <DropdownMenuPortal>
+                                        <DropdownMenuSubContent>
+                                            <DropdownMenuItem
+                                                onSelect={() =>
+                                                    setColorMode("light")}
+                                            >
+                                                <Sun size={16} />
+                                                Light
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onSelect={() =>
+                                                    setColorMode("dark")}
+                                            >
+                                                <Moon size={16} />
+                                                Dark
+                                            </DropdownMenuItem>
+                                        </DropdownMenuSubContent>
+                                    </DropdownMenuPortal>
+                                </DropdownMenuSub>
                                 <DropdownMenuItem>
                                     <LogOut size={16} /> Log out
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
+                        <ProfileDialog />
                     </SidebarFooter>
                 </Sidebar>
             </Show>
@@ -107,6 +153,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
                 <header class="border-b border-border w-full p-4">
                     <SidebarTrigger />
                 </header>
+                <ProfileDialog />
                 <div class="p-4">
                     {props.children}
                 </div>

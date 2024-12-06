@@ -1,5 +1,6 @@
 import { type Config } from "tailwindcss";
 import tailwindAnimate from "tailwindcss-animate";
+import { fontFamily } from "tailwindcss/defaultTheme";
 
 export default {
     darkMode: ["variant", [".dark &", '[data-kb-theme="dark"] &']],
@@ -109,6 +110,9 @@ export default {
                 "content-show": "content-show 0.2s ease-out",
                 "content-hide": "content-hide 0.2s ease-out",
                 "caret-blink": "caret-blink 1.25s ease-out infinite",
+            },
+            fontFamily: {
+                sans: ["Inter", ...fontFamily.sans],
             },
         },
     },

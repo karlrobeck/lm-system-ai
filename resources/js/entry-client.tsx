@@ -1,13 +1,32 @@
-import { Component } from "solid-js";
+import { Component, Suspense } from "solid-js";
 import { render } from "solid-js/web";
 import { Navigate, Route, Router } from "@solidjs/router";
 import NotFoundPage from "./routes/not-found";
 import DashboardLayout from "./routes/dashboard";
 import DashboardPage from "./routes/dashboard/index";
+import {
+  ColorModeProvider,
+  ColorModeScript,
+  createLocalStorageManager,
+} from "@kobalte/core";
+
+import "@fontsource/inter";
+import "../css/app.css";
 
 const MainClient: Component<{}> = (props) => {
+  const storageManager = createLocalStorageManager("vite-ui-theme");
+
   return (
-    <Router>
+    <Router
+      root={(props) => (
+        <>
+          <ColorModeScript storageType={storageManager.type} />
+          <ColorModeProvider storageManager={storageManager}>
+            <Suspense>{props.children}</Suspense>
+          </ColorModeProvider>
+        </>
+      )}
+    >
       <Route path={"/dashboard"} component={DashboardLayout}>
         <Route path={""} component={DashboardPage} />
       </Route>

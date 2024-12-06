@@ -45,7 +45,7 @@
 
     --ring: 240 5.9% 10%;
 
-    --radius: 0.5rem;
+    --radius: 0.3rem;
   }
 
   .dark,
@@ -91,7 +91,65 @@
 
     --ring: 240 4.9% 83.9%;
 
-    --radius: 0.5rem;
+    --radius: 0.3rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  .heading-1 {
+    @apply scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl;
+  }
+  .heading-2 {
+    @apply scroll-m-20 pb-2 text-3xl font-semibold tracking-tight transition-colors first:mt-0;
+  }
+  .heading-3 {
+    @apply scroll-m-20 text-2xl font-semibold tracking-tight;
+  }
+  .heading-4 {
+    @apply scroll-m-20 text-xl font-semibold tracking-tight;
+  }
+  .paragraph {
+    @apply leading-7 [&:not(:first-child)]:mt-6;
+  }
+  .blockquote {
+    @apply mt-6 border-l-2 pl-6 italic;
+  }
+  .lead {
+    @apply text-muted-foreground text-xl;
+  }
+  .large {
+    @apply text-lg font-semibold;
+  }
+  .small {
+    @apply text-sm font-medium leading-none;
+  }
+  .muted {
+    @apply text-muted-foreground text-sm;
+  }
+  table {
+    @apply w-full;
+  }
+  table.stripe > thead > tr {
+    @apply even:bg-muted;
+  }
+  table.stripe > tbody > tr {
+    @apply even:bg-muted;
+  }
+  tr {
+    @apply hover:bg-muted m-0 p-0 transition-colors;
+  }
+  th {
+    @apply px-4 py-2 text-left font-bold [&[align=center]]:text-center [&[align=right]]:text-right;
+  }
+  td {
+    @apply px-4 py-2 text-left [&[align=center]]:text-center [&[align=right]]:text-right;
   }
 }
 
