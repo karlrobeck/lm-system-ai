@@ -17,6 +17,10 @@ Route::apiResources([
     'api/scores' => ScoresController::class,
 ]);
 
+Route::get('api/modality/visualizations/context-file/{id}', [ModalityVisualizationController::class, 'showByContextFile']);
+Route::get('api/modality/auditory/context-file/{id}', [ModalityAuditoryController::class, 'showByContextFile']);
+Route::get('api/modality/reading-writing/context-file/{id}', [ModalityReadingWritingController::class, 'showByContextFile']);
+
 Route::fallback(function () {
     return view('client');
 });

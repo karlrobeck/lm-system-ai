@@ -31,7 +31,7 @@ class FilesController extends Controller
      */
     public function show(string $id)
     {
-        return Files::find($id);
+        return Files::with('user')->find($id);
     }
 
     /**

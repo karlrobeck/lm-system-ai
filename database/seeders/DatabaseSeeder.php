@@ -22,60 +22,56 @@ class DatabaseSeeder extends Seeder
             'email' => "testuser@gmail.com",
             'password' => "testpassword"
         ])->create();
-        // visualization
-        $visualization_context_file = Files::factory([
-            'owner_id' => $user->id,
-        ])->create();
-        for ($i = 0; $i < 10; $i++) {
-            $image_file = Files::factory([
+        for ($h = 0; $h < 10; $h++) {
+            $context_file = Files::factory([
                 'owner_id' => $user->id,
             ])->create();
-            ModalityVisualization::factory([
-                'image_file_id' => $image_file->id,
-                'context_file_id' => $visualization_context_file->id,
-            ])->create();
-            // scores
-            for ($j = 0; $j < 10; $j++) {
-                Scores::factory()->create([
-                    'user_id' => $user->id,
-                    'context_file_id' => $visualization_context_file->id,
-                ]);
+            for ($i = 0; $i < 10; $i++) {
+                $image_file = Files::factory([
+                    'owner_id' => $user->id,
+                    'type' => 'image',
+                ])->create();
+                ModalityVisualization::factory([
+                    'image_file_id' => $image_file->id,
+                    'context_file_id' => $context_file->id,
+                ])->create();
+                // scores
+                for ($j = 0; $j < 10; $j++) {
+                    Scores::factory()->create([
+                        'user_id' => $user->id,
+                        'context_file_id' => $context_file->id,
+                    ]);
+                }
             }
-        }
-        // reading-writing
-        $reading_writing_context_file = Files::factory([
-            'owner_id' => $user->id,
-        ])->create();
-        for ($i = 0; $i < 10; $i++) {
-            ModalityReadingWriting::factory([
-                'context_file_id' => $reading_writing_context_file->id,
-            ])->create();
-            // scores
-            for ($j = 0; $j < 10; $j++) {
-                Scores::factory()->create([
-                    'user_id' => $user->id,
-                    'context_file_id' => $reading_writing_context_file->id,
-                ]);
+            for ($i = 0; $i < 10; $i++) {
+                ModalityReadingWriting::factory([
+                    'context_file_id' => $context_file->id,
+                ])->create();
+                // scores
+                for ($j = 0; $j < 10; $j++) {
+                    Scores::factory()->create([
+                        'user_id' => $user->id,
+                        'context_file_id' => $context_file->id,
+                    ]);
+                }
             }
-        }
-        // auditory
-        $auditory_context_file = Files::factory([
-            'owner_id' => $user->id,
-        ])->create();
-        for ($i = 0; $i < 10; $i++) {
-            $audio_file = Files::factory([
-                'owner_id' => $user->id,
-            ])->create();
-            ModalityAuditory::factory([
-                'audio_file_id' => $audio_file->id,
-                'context_file_id' => $auditory_context_file->id,
-            ])->create();
-            // scores
-            for ($j = 0; $j < 10; $j++) {
-                Scores::factory()->create([
-                    'user_id' => $user->id,
-                    'context_file_id' => $auditory_context_file->id,
-                ]);
+            // auditory
+            for ($i = 0; $i < 10; $i++) {
+                $audio_file = Files::factory([
+                    'owner_id' => $user->id,
+                    'type' => 'audio',
+                ])->create();
+                ModalityAuditory::factory([
+                    'audio_file_id' => $audio_file->id,
+                    'context_file_id' => $context_file->id,
+                ])->create();
+                // scores
+                for ($j = 0; $j < 10; $j++) {
+                    Scores::factory()->create([
+                        'user_id' => $user->id,
+                        'context_file_id' => $context_file->id,
+                    ]);
+                }
             }
         }
     }

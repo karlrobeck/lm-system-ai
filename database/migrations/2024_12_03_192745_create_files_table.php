@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('path');
             $table->string('name');
-            $table->enum('type', ['pdf', 'markdown']);
+            $table->enum('type', ['pdf', 'markdown', 'image', 'audio']);
             $table->timestamps();
         });
     }

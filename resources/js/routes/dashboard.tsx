@@ -1,4 +1,4 @@
-import { A, RouteSectionProps } from "@solidjs/router";
+import { A, createAsync, RouteSectionProps } from "@solidjs/router";
 import {
     FileText,
     LoaderCircle,
@@ -51,7 +51,7 @@ import UploadDialog from "./dashboard/upload-dialog";
 
 const DashboardLayout = (props: RouteSectionProps) => {
     const { setColorMode } = useColorMode();
-    const [user] = createResource(1, async (id: number) => getUserById(id));
+    const user = createAsync(() => getUserById(1));
 
     return (
         <SidebarProvider>
@@ -98,7 +98,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
                         <SidebarGroupLabel>Your files</SidebarGroupLabel>
                         <SidebarMenu>
                             <Show
-                                when={user.state === "ready"}
+                                when={user() !== undefined}
                                 fallback={
                                     <For each={Array.from(Array(25))}>
                                         {() => <Skeleton height={32} />}
@@ -106,19 +106,28 @@ const DashboardLayout = (props: RouteSectionProps) => {
                                 }
                             >
                                 <For each={user().files}>
-                                    {(file) => (
-                                        <SidebarMenuItem>
-                                            <SidebarMenuButton
-                                                as={A}
-                                                href={`/dashboard/files/${file.id}`}
-                                            >
-                                                <FileText size={16} />
-                                                <p class="truncate">
-                                                    {file.name}
-                                                </p>
-                                            </SidebarMenuButton>
-                                        </SidebarMenuItem>
-                                    )}
+                                    {(file) => {
+                                        console.log(file.type);
+                                        if (
+                                            ["pdf", "markdown"].includes(
+                                                file.type,
+                                            )
+                                        ) {
+                                            return (
+                                                <SidebarMenuItem>
+                                                    <SidebarMenuButton
+                                                        as={A}
+                                                        href={`/dashboard/conversation/${file.id}`}
+                                                    >
+                                                        <FileText size={16} />
+                                                        <p class="truncate">
+                                                            {file.name}
+                                                        </p>
+                                                    </SidebarMenuButton>
+                                                </SidebarMenuItem>
+                                            );
+                                        }
+                                    }}
                                 </For>
                             </Show>
                         </SidebarMenu>
@@ -127,7 +136,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
                 <SidebarFooter class="flex flex-row gap-2.5 items-center justify-between">
                     <Avatar>
                         <Show
-                            when={user.state === "ready"}
+                            when={user() !== undefined}
                             fallback={<Skeleton height={48} circle />}
                         >
                             <AvatarFallback>
@@ -138,7 +147,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
                         </Show>
                     </Avatar>
                     <Show
-                        when={user.state === "ready"}
+                        when={user() !== undefined}
                         fallback={
                             <Skeleton
                                 class="w-full"
@@ -150,7 +159,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
                         <h3 class="font-bold truncate">{user().name}</h3>
                     </Show>
                     <Show
-                        when={user.state === "ready"}
+                        when={user() !== undefined}
                         fallback={
                             <Skeleton
                                 width={40}

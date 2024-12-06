@@ -12,6 +12,7 @@ import {
 
 import "@fontsource/inter";
 import "../css/app.css";
+import ConversationPage from "./routes/dashboard/conversation";
 
 const MainClient: Component<{}> = (props) => {
   const storageManager = createLocalStorageManager("vite-ui-theme");
@@ -29,6 +30,7 @@ const MainClient: Component<{}> = (props) => {
     >
       <Route path={"/dashboard"} component={DashboardLayout}>
         <Route path={""} component={DashboardPage} />
+        <Route path={"conversation/:id"} component={ConversationPage} />
       </Route>
       <Route path={""} component={() => <Navigate href={"/dashboard"} />} />
       <Route path={"*"} component={NotFoundPage} />

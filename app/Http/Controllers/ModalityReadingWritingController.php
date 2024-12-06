@@ -33,6 +33,11 @@ class ModalityReadingWritingController extends Controller
         return ModalityReadingWriting::with('context_file')->find($id);
     }
 
+    public function showByContextFile(string $id)
+    {
+        return ModalityReadingWriting::with('context_file')->where('context_file_id', $id)->get();
+    }
+
     /**
      * Update the specified resource in storage.
      */

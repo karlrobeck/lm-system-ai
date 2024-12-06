@@ -30,7 +30,12 @@ class ModalityVisualizationController extends Controller
      */
     public function show(string $id)
     {
-        return ModalityVisualization::find($id);
+        return ModalityVisualization::with('context_file')->with('image_file')->find($id);
+    }
+
+    public function showByContextFile(string $id)
+    {
+        return ModalityVisualization::with('context_file')->with('image_file')->where('context_file_id', $id)->get();
     }
 
     /**

@@ -25,12 +25,17 @@ class ModalityAuditoryController extends Controller
         return ModalityAuditory::create($request->all());
     }
 
+    public function showByContextFile(string $id)
+    {
+        return ModalityAuditory::with('context_file')->with('audio_file')->where('context_file_id', $id)->get();
+    }
+
     /**
      * Display the specified resource.
      */
     public function show(string $id)
     {
-        return ModalityAuditory::find($id);
+        return ModalityAuditory::with('context_file')->with('audio_file')->find($id);
     }
 
     /**
