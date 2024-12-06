@@ -1,6 +1,7 @@
 import { A, RouteSectionProps } from "@solidjs/router";
 import {
     FileText,
+    LoaderCircle,
     LogOut,
     Moon,
     Palette,
@@ -44,6 +45,7 @@ import {
 } from "~/components/ui/dropdown-menu";
 import ProfileDialog from "./dashboard/profile";
 import { useColorMode } from "@kobalte/core";
+import { Skeleton } from "~/components/ui/skeleton";
 
 const DashboardLayout = (props: RouteSectionProps) => {
     const { setColorMode } = useColorMode();
@@ -51,17 +53,24 @@ const DashboardLayout = (props: RouteSectionProps) => {
 
     return (
         <SidebarProvider>
-            <Show when={user.state === "ready"}>
-                <Sidebar>
-                    <SidebarHeader>
-                        <h4 class="heading-4">
-                            App Title
-                        </h4>
-                    </SidebarHeader>
-                    <SidebarContent>
-                        <SidebarGroup>
-                            <SidebarGroupLabel>Your files</SidebarGroupLabel>
-                            <SidebarMenu>
+            <Sidebar>
+                <SidebarHeader>
+                    <h4 class="heading-4">
+                        App Title
+                    </h4>
+                </SidebarHeader>
+                <SidebarContent>
+                    <SidebarGroup>
+                        <SidebarGroupLabel>Your files</SidebarGroupLabel>
+                        <SidebarMenu>
+                            <Show
+                                when={user.state === "ready"}
+                                fallback={
+                                    <For each={Array.from(Array(25))}>
+                                        {() => <Skeleton height={32} />}
+                                    </For>
+                                }
+                            >
                                 <For each={user().files}>
                                     {(file) => (
                                         <SidebarMenuItem>
@@ -77,18 +86,51 @@ const DashboardLayout = (props: RouteSectionProps) => {
                                         </SidebarMenuItem>
                                     )}
                                 </For>
-                            </SidebarMenu>
-                        </SidebarGroup>
-                    </SidebarContent>
-                    <SidebarFooter class="flex flex-row gap-2.5 items-center justify-between">
-                        <Avatar>
+                            </Show>
+                        </SidebarMenu>
+                    </SidebarGroup>
+                </SidebarContent>
+                <SidebarFooter class="flex flex-row gap-2.5 items-center justify-between">
+                    <Avatar>
+                        <Show
+                            when={user.state === "ready"}
+                            fallback={<Skeleton height={48} circle />}
+                        >
                             <AvatarFallback>
                                 {user().name.split(" ")
                                     .map((n) => n[0])
                                     .join("")}
                             </AvatarFallback>
-                        </Avatar>
+                        </Show>
+                    </Avatar>
+                    <Show
+                        when={user.state === "ready"}
+                        fallback={
+                            <Skeleton
+                                class="w-full"
+                                height={24}
+                                radius={10}
+                            />
+                        }
+                    >
                         <h3 class="font-bold truncate">{user().name}</h3>
+                    </Show>
+                    <Show
+                        when={user.state === "ready"}
+                        fallback={
+                            <Skeleton
+                                width={40}
+                                height={40}
+                                radius={10}
+                                class="flex flex-row justify-center items-center"
+                            >
+                                <LoaderCircle
+                                    size={16}
+                                    class="animate-spin"
+                                />
+                            </Skeleton>
+                        }
+                    >
                         <DropdownMenu>
                             <DropdownMenuTrigger>
                                 <Tooltip>
@@ -105,12 +147,15 @@ const DashboardLayout = (props: RouteSectionProps) => {
                                 </Tooltip>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent>
-                                <DropdownMenuLabel>General</DropdownMenuLabel>
+                                <DropdownMenuLabel>
+                                    General
+                                </DropdownMenuLabel>
                                 <DropdownMenuItem
                                     onClick={() => {
-                                        const dialog = document.getElementById(
-                                            "profile-dialog",
-                                        )! as HTMLButtonElement;
+                                        const dialog = document
+                                            .getElementById(
+                                                "profile-dialog",
+                                            )! as HTMLButtonElement;
                                         dialog.click();
                                     }}
                                 >
@@ -145,10 +190,10 @@ const DashboardLayout = (props: RouteSectionProps) => {
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <ProfileDialog />
-                    </SidebarFooter>
-                </Sidebar>
-            </Show>
+                    </Show>
+                    <ProfileDialog />
+                </SidebarFooter>
+            </Sidebar>
             <main class="w-full">
                 <header class="border-b border-border w-full p-4">
                     <SidebarTrigger />
