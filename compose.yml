@@ -6,6 +6,7 @@ services:
             args:
                 WWWGROUP: '${WWWGROUP}'
         image: 'sail-8.4/app'
+        restart: 'unless-stopped'
         extra_hosts:
             - 'host.docker.internal:host-gateway'
         environment:
@@ -32,6 +33,7 @@ services:
         image: 'mysql/mysql-server:8.0'
         ports:
             - '${FORWARD_DB_PORT:-3306}:3306'
+        restart: 'unless-stopped'
         environment:
             MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
             MYSQL_ROOT_HOST: '%'
