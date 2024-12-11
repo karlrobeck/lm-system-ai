@@ -1,4 +1,4 @@
-import { query } from "@solidjs/router";
+import { action, query, redirect } from "@solidjs/router";
 
 export type User = {
     id: number;
@@ -25,6 +25,37 @@ export const getUsers = async () => {
 };
 
 export const getUserById = query(async (id: number) => {
-    const response = await fetch(`/api/users/${id}`);
+    const token = localStorage.getItem("token");
+    const response = await fetch(`/api/users/${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
     return await response.json() as User;
 }, "getUserById");
+
+export const getCurrentUser = query(async () => {
+    const token = localStorage.getItem("token");
+    const response = await fetch("/api/users/me", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    console.log(response);
+    return await response.json() as User;
+}, "getCurrentUser");
+
+export const logout = action(async () => {
+    console.log("logout");
+    const token = localStorage.getItem("token");
+    const response = await fetch("/auth/logout", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    if (!response.ok) {
+        throw new Error(response.statusText);
+    }
+    localStorage.removeItem("token");
+    throw redirect("/login");
+});

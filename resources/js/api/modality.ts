@@ -37,24 +37,42 @@ export type ReadingWriting = {
 export const modality = {
     visualization: {
         listByContextFile: query(async (contextFileId: string) => {
+            const token = localStorage.getItem("token");
             const response = await fetch(
                 `/api/modality/visualizations/context-file/${contextFileId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
             );
             return await response.json() as Visualization[];
         }, "visualizationListByContextFile"),
     },
     auditory: {
         listByContextFile: query(async (contextFileId: string) => {
+            const token = localStorage.getItem("token");
             const response = await fetch(
                 `/api/modality/auditory/context-file/${contextFileId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
             );
             return await response.json() as Auditory[];
         }, "auditoryListByContextFile"),
     },
     readingWriting: {
         listByContextFile: query(async (contextFileId: string) => {
+            const token = localStorage.getItem("token");
             const response = await fetch(
                 `/api/modality/reading-writing/context-file/${contextFileId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
             );
             return await response.json() as ReadingWriting[];
         }, "readingWritingListByContextFile"),

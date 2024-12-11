@@ -13,6 +13,11 @@ export type File = {
 };
 
 export const getFileById = async (id: string) => {
-    const response = await fetch(`/api/files/${id}`);
+    const token = localStorage.getItem("token");
+    const response = await fetch(`/api/files/${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
     return await response.json() as File;
 };

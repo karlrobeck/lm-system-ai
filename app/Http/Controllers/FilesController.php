@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreFilesRequest;
 use App\Http\Requests\UpdateFilesRequest;
 use App\Models\Files;
+use Illuminate\Http\Request;
 
 class FilesController extends Controller
 {
@@ -29,9 +30,16 @@ class FilesController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
-        return Files::with('user')->find($id);
+        $user = $request->user();
+        $file = Files::with('user')->where('id', $id)->first();
+
+        if (!$file) {
+            return response()->json(['error' => 'File not found or you do not have permission to view it'], 404);
+        }
+
+        return $file;
     }
 
     /**

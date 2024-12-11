@@ -1,4 +1,4 @@
-import { A, createAsync, RouteSectionProps } from "@solidjs/router";
+import { A, createAsync, redirect, RouteSectionProps } from "@solidjs/router";
 import {
     FileText,
     LoaderCircle,
@@ -11,7 +11,7 @@ import {
     User,
 } from "lucide-solid";
 import { createResource, For, Show } from "solid-js";
-import { getUserById } from "~/api/user";
+import { getCurrentUser, getUserById, logout } from "~/api/user";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import {
@@ -50,8 +50,12 @@ import { Skeleton } from "~/components/ui/skeleton";
 import UploadDialog from "./dashboard/upload-dialog";
 
 const DashboardLayout = (props: RouteSectionProps) => {
+    if (localStorage.getItem("token") === null) {
+        window.location.href = "/login";
+    }
+
     const { setColorMode } = useColorMode();
-    const user = createAsync(() => getUserById(1));
+    const user = createAsync(() => getCurrentUser());
 
     return (
         <SidebarProvider>
@@ -232,7 +236,14 @@ const DashboardLayout = (props: RouteSectionProps) => {
                                     </DropdownMenuPortal>
                                 </DropdownMenuSub>
                                 <DropdownMenuItem>
-                                    <LogOut size={16} /> Log out
+                                    <form action={logout} method="post">
+                                        <button
+                                            type="submit"
+                                            class="flex flex-row gap-2.5"
+                                        >
+                                            <LogOut size={16} /> Log out
+                                        </button>
+                                    </form>
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User as ModelsUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class User extends Controller
 {
@@ -20,16 +21,23 @@ class User extends Controller
      */
     public function store(Request $request)
     {
-        $request->validated();
-        return ModelsUser::create($request->all());
+        $payload = $request->json()->all();
+        $user = ModelsUser::create($payload);
+        return ModelsUser::with('files')->with('scores')->find($user['id']);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
-        return ModelsUser::with('files')->with('scores')->find($id);
+        $user = $request->user();
+        return ModelsUser::with('files')->with('scores')->where('id', $user->id);
+    }
+
+    public function me(Request $request)
+    {
+        return ModelsUser::with('files')->with('scores')->find($request->user()->id);
     }
 
     /**
