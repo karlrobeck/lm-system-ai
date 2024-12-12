@@ -7,7 +7,7 @@ import {
     Show,
     Switch,
 } from "solid-js";
-import { getUserById } from "~/api/user";
+import { getCurrentUser, getUserById } from "~/api/user";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import {
@@ -29,7 +29,7 @@ import {
 } from "~/components/ui/table";
 
 const ProfileDialog: Component<{}> = (props) => {
-    const [user] = createResource(1, async (id: number) => getUserById(id));
+    const [user] = createResource(() => getCurrentUser());
     const [updatePassword, setUpdatePassword] = createSignal(true);
 
     return (
