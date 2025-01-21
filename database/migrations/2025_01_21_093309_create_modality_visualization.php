@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('modality_visualization', function (Blueprint $table) {
+        Schema::create('modality_visualizations', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('file_id');
             $table->foreign('file_id')->references('id')->on('files');
@@ -30,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('modality_visualization');
+        Schema::dropIfExists('modality_visualizations');
     }
 };

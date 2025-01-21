@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('modality_reading', function (Blueprint $table) {
+        Schema::create('modality_readings', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('file_id');
             $table->foreign('file_id')->references('id')->on('files');
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('modality_reading');
+        Schema::dropIfExists('modality_readings');
     }
 };

@@ -19,6 +19,7 @@ class ModalityVisualizationFactory extends Factory
         return [
             'file_id' => $this->faker->randomDigitNotNull(),
             'question' => $this->faker->sentence(),
+            'image_link' => $this->faker->imageUrl(),
             'choices' => json_encode($this->faker->words(4)),
             'question_index' => $this->faker->numberBetween(1, 10),
             'correct_answer' => $this->faker->word(),

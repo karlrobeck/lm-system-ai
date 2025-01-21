@@ -17,7 +17,8 @@ return new class extends Migration
             $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('path');
             $table->string('name');
-            $table->boolean('ready')->default(false);
+            $table->string('gpt_batch_id')->nullable();
+            $table->boolean('is_ready')->default(false);
             $table->enum('type', ['pdf', 'markdown', 'image', 'audio']);
             $table->timestamps();
         });
