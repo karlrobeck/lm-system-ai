@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ModalityReadingWriting>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ModalityWriting>
  */
-class ModalityReadingWritingFactory extends Factory
+class ModalityWritingFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -16,15 +16,14 @@ class ModalityReadingWritingFactory extends Factory
      */
     public function definition(): array
     {
-
-        $mode = $this->faker->randomElement(['reading', 'writing']);
-
         return [
-            'mode' => $mode,
+            'file_id' => $this->faker->randomDigitNotNull(),
             'question' => $this->faker->sentence(),
-            'context_answer' => $this->faker->sentence(),
-            'choices' => $mode === 'reading' ? json_encode($this->faker->words(4)) : null,
+            'context_answer' => $this->faker->paragraph(),
+            'question_index' => $this->faker->unique()->word(),
             'test_type' => $this->faker->randomElement(['pre', 'post']),
+            'created_at' => now(),
+            'updated_at' => now(),
         ];
     }
 }

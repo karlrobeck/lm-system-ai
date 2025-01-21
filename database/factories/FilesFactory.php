@@ -19,7 +19,8 @@ class FilesFactory extends Factory
         return [
             'path' => $this->faker->url(),
             'name' => $this->faker->sentence(),
-            'ready' => $this->faker->boolean(),
+            'is_ready' => $this->faker->boolean(),
+            'gpt_batch_id' => $this->faker->uuid(),
             'type' => $this->faker->randomElement(['pdf', 'markdown', 'image']),
         ];
     }
