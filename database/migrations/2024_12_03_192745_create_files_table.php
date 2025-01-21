@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('gpt_batch_id')->nullable();
             $table->boolean('is_ready')->default(false);
-            $table->enum('type', ['pdf', 'markdown', 'image', 'audio']);
+            $table->string('type');
             $table->timestamps();
         });
     }

@@ -18,6 +18,7 @@ class UserSeeder extends Seeder
             'name' => 'Test user',
             'email' => 'testing@gmail.com',
             'password' => bcrypt('randompassword'),
+            'level' => 'tertiary',
         ]);
     }
 }

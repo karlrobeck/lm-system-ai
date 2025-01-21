@@ -20,27 +20,35 @@ class ModalitySeeder extends Seeder
     {
         $db_file = Files::query()->find(1);
         
-        for ($i = 1; $i <= 5; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
+
+            $test_type = $i > 5 ? 'post' : 'pre';
+
             ModalityReading::factory()->create([
                 'question_index' => $i,
                 'correct_answer' => 'Abuja',
                 'file_id' => $db_file->id,
+                'test_type' => $test_type,
             ]);
             ModalityWriting::factory()->create([
                 'question_index' => $i,
                 'file_id' => $db_file->id,
+                'test_type' => $test_type,
             ]);
             ModalityVisualization::factory()->create([
                 'question_index' => $i,
                 'file_id' => $db_file->id,
+                'test_type' => $test_type,
             ]);
             ModalityAuditory::factory()->create([
                 'question_index' => $i,
                 'file_id' => $db_file->id,
+                'test_type' => $test_type,
             ]);
             ModalityKinesthetic::factory()->create([
                 'question_index' => $i,
                 'file_id' => $db_file->id,
+                'test_type' => $test_type,
             ]);
         }
     }

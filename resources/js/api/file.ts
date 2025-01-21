@@ -1,4 +1,4 @@
-import { query } from "@solidjs/router";
+import { action, query, revalidate } from "@solidjs/router";
 import type { User } from "./user";
 
 export type File = {
@@ -12,12 +12,31 @@ export type File = {
     user: User;
 };
 
-export const getFileById = async (id: string) => {
+export const getFileMetadataById = query(async (id: string) => {
     const token = localStorage.getItem("token");
-    const response = await fetch(`/api/files/${id}`, {
+    const response = await fetch(`/api/files/metadata/${id}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
     });
-    return await response.json() as File;
-};
+    const data = await response.json();
+
+    console.log(data);
+    return data as File;
+}, "getFileMetadataById");
+
+export const uploadFile = action(async (formData: FormData) => {
+    const token = localStorage.getItem("token");
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')
+    .getAttribute("content");
+    const response = await fetch("/api/files/upload", {
+        method: "POST",
+        headers: {
+            Authorization: `Bearer ${token}`,
+            "X-CSRF-TOKEN": csrfToken,
+        },
+        body: formData,
+    });
+    console.log(await response.text());
+    revalidate("getCurrentUser");
+})
