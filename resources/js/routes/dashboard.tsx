@@ -111,7 +111,6 @@ const DashboardLayout = (props: RouteSectionProps) => {
                             >
                                 <For each={user().files}>
                                     {(file) => {
-                                        console.log(file.type);
                                         if (
                                             ["pdf", "markdown"].includes(
                                                 file.type,

@@ -19,7 +19,8 @@ class FilesFactory extends Factory
         return [
             'path' => $this->faker->url(),
             'name' => $this->faker->sentence(),
-            'type' => $this->faker->randomElement(['pdf', 'markdown']),
+            'ready' => $this->faker->boolean(),
+            'type' => $this->faker->randomElement(['pdf', 'markdown', 'image']),
         ];
     }
 }

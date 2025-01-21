@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
@@ -19,6 +18,8 @@ class AuthController extends Controller
         if (! $user || ! Hash::check($payload['password'], $user->password)) {
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
+
+        error_log(json_encode($user));
 
         $token = $user->createToken('my-app-token')->plainTextToken;
 

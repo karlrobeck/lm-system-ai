@@ -16,6 +16,8 @@ export const register = action(async (form: FormData) => {
   //Delay for 1 second to simulate network request
   await new Promise((resolve) => setTimeout(resolve, 1000));
   const data = schema.parse(Object.fromEntries(form.entries()));
+  console.log(data);
+
   const response = await fetch("/auth/register", {
     method: "POST",
     headers: {

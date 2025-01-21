@@ -11,7 +11,7 @@ export const login = action(async (form: FormData) => {
     .getAttribute("content");
 
   //Delay for 1 second to simulate network request
-  // await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   const data = schema.parse(Object.fromEntries(form.entries()));
   const response = await fetch("/auth/login", {
     method: "POST",

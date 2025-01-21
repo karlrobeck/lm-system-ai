@@ -11,6 +11,8 @@ class ModalityAuditory extends Model
     /** @use HasFactory<\Database\Factories\ModalityAuditoryFactory> */
     use HasFactory;
 
+    protected $fillable = [];
+
     public function context_file(): HasOne
     {
         return $this->hasOne(Files::class, 'id', 'context_file_id');

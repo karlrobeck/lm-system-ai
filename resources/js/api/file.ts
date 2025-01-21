@@ -1,5 +1,5 @@
 import { query } from "@solidjs/router";
-import { User } from "./user";
+import type { User } from "./user";
 
 export type File = {
     id: string;

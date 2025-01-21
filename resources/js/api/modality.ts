@@ -1,12 +1,12 @@
 import { query } from "@solidjs/router";
-import { File } from "./file";
+import type { File } from "./file";
 
 export type Visualization = {
     id: string;
     test_type: "pre" | "post";
-    image: File;
+    image_file: File;
     question: string;
-    choices: string[];
+    choices: string; // JSON stringified array
     correct_answer: string;
     context_file: File;
     created_at: string;
@@ -29,9 +29,10 @@ export type ReadingWriting = {
     mode: "reading" | "writing";
     question: string;
     correct_answer: string;
-    choices?: string[];
+    choices?: string; // JSON stringified array
     created_at: string;
     updated_at: string;
+    context_file: File;
 };
 
 export const modality = {

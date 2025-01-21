@@ -11,6 +11,14 @@ class Files extends Model
     /** @use HasFactory<\Database\Factories\FilesFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'path',
+        'name',
+        'ready',
+        'type',
+        'owner_id',
+    ];
+
     public function user(): HasOne
     {
         return $this->hasOne(User::class, 'id', 'owner_id');

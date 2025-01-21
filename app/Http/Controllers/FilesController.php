@@ -32,14 +32,20 @@ class FilesController extends Controller
      */
     public function show(Request $request, string $id)
     {
-        $user = $request->user();
         $file = Files::with('user')->where('id', $id)->first();
-
         if (!$file) {
             return response()->json(['error' => 'File not found or you do not have permission to view it'], 404);
         }
-
         return $file;
+    }
+
+    public function showFile(string $id)
+    {
+        $file = Files::where('id', $id)->first();
+        if (!$file) {
+            return response()->json(['error' => 'File not found or you do not have permission to view it'], 404);
+        }
+        return response()->download(storage_path('app/' . $file->path));
     }
 
     /**
