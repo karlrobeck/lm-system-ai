@@ -1,5 +1,6 @@
-import { action, query, revalidate } from "@solidjs/router";
+import { action, query, reload, revalidate } from "@solidjs/router";
 import type { User } from "./user";
+import { modality } from "./modality";
 
 export type File = {
     id: string;
@@ -7,6 +8,8 @@ export type File = {
     path: string;
     name: string;
     type: "markdown" | "pdf" | "image" | "audio";
+    is_ready:boolean;
+    gpt_batch_id: string;
     created_at: string;
     updated_at: string;
     user: User;
@@ -19,9 +22,9 @@ export const getFileMetadataById = query(async (id: string) => {
             Authorization: `Bearer ${token}`,
         },
     });
-    const data = await response.json();
+    const data = await response.json() as File;
 
-    console.log(data);
+    reload({revalidate:modality.reading.listByContextFile.keyFor(data.id)});
     return data as File;
 }, "getFileMetadataById");
 

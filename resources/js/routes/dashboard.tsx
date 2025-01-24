@@ -109,7 +109,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
 										return (
 											<SidebarMenuItem>
 												<SidebarMenuButton
-													as={A}
+													as={"a"}
 													href={`/dashboard/conversation/${file.id}`}
 												>
 													<FileText size={16} />

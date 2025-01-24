@@ -121,10 +121,16 @@ export const modality = {
                     },
                 },
             );
-            // join
+            try {
+                // join
             const preTest = await preTestResponse.json() as Reading[];
             const postTest = await postTestResponse.json() as Reading[];
             return [...preTest, ...postTest] as Reading[];
+            } catch (e) {
+                console.error(e);
+                return [] as Reading[];
+            }
+            
         }, "readingListByContextFile"),
     },
     writing: {

@@ -55,6 +55,7 @@ It tolls for thee.
             'owner_id' => $owner->id,
             'name' => $filename,
             'path' => $filename,
+            'is_ready' => true,
         ]);
     }
 }

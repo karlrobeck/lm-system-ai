@@ -11,7 +11,10 @@ use Termwind\Components\Raw;
 class ModalityReadingController extends Controller
 {
     public function getReadingTest(Request $request,$mode,$id) {
-        $file = Files::query()->where('id','=',$id)->first();
+
+        $user = Auth::guard('sanctum')->user();
+
+        $file = Files::query()->where('id','=',$id)->where('owner_id','=',$user->id)->first();
         if ($file == null) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }

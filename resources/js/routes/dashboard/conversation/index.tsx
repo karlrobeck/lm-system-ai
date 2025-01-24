@@ -23,17 +23,27 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 const ConversationPage: Component<{}> = (props) => {
 	const params = useParams<{ id: string }>();
-	const file = createAsync(() => getFileMetadataById(params.id), {
-		initialValue: undefined,
-	});
+	const file = createAsync(
+		() => {
+			return getFileMetadataById(params.id);
+		},
+		{
+			initialValue: undefined,
+		},
+	);
+	/* 
 	const visualization = createAsync(() =>
 		modality.visualization.listByContextFile(params.id),
 	);
 	const auditory = createAsync(() =>
 		modality.auditory.listByContextFile(params.id),
 	);
-	const reading = createAsync(() =>
-		modality.reading.listByContextFile(params.id),
+	*/
+	const reading = createAsync(
+		() => modality.reading.listByContextFile(params.id),
+		{
+			initialValue: undefined,
+		},
 	);
 
 	return (
@@ -60,10 +70,7 @@ const ConversationPage: Component<{}> = (props) => {
 					<span class="lead small">{file().user.name}</span>
 				</div>
 			</Show>
-			<Show
-				when={reading() !== undefined}
-				fallback={<Skeleton height={24} class="w-1/4" />}
-			>
+			<Suspense fallback={<Skeleton height={24} class="w-1/4" />}>
 				<Tabs>
 					<TabsList>
 						<TabsTrigger value="preTest">Pre</TabsTrigger>
@@ -71,12 +78,22 @@ const ConversationPage: Component<{}> = (props) => {
 					</TabsList>
 					<TabsContent value="preTest">
 						<div class="grid grid-cols-3 gap-2.5">
-							<Card>
+							<Card
+								classList={{
+									"opacity-50": Boolean(file()?.is_ready) === false,
+								}}
+							>
 								<CardHeader>
 									<CardTitle>Reading</CardTitle>
 									<CardDescription>
-										Questions:{" "}
-										{reading().filter((v) => v.test_type === "pre").length}
+										<Show
+											when={file()?.is_ready}
+											fallback={<>Test is not ready</>}
+										>
+											Questions:{" "}
+											{reading()?.filter((v) => v.test_type === "pre")
+												?.length || 0}
+										</Show>
 									</CardDescription>
 								</CardHeader>
 								<CardFooter>
@@ -92,12 +109,22 @@ const ConversationPage: Component<{}> = (props) => {
 					</TabsContent>
 					<TabsContent value="postTest">
 						<div class="grid grid-cols-3 gap-2.5">
-							<Card>
+							<Card
+								classList={{
+									"opacity-50": Boolean(file()?.is_ready) === false,
+								}}
+							>
 								<CardHeader>
 									<CardTitle>Reading</CardTitle>
 									<CardDescription>
-										Questions:{" "}
-										{reading().filter((v) => v.test_type === "post").length}
+										<Show
+											when={file()?.is_ready}
+											fallback={<>Test is not ready</>}
+										>
+											Questions:{" "}
+											{reading()?.filter((v) => v.test_type === "post")
+												?.length || 0}
+										</Show>
 									</CardDescription>
 								</CardHeader>
 								<CardFooter>
@@ -112,7 +139,7 @@ const ConversationPage: Component<{}> = (props) => {
 						</div>
 					</TabsContent>
 				</Tabs>
-			</Show>
+			</Suspense>
 		</article>
 	);
 };
