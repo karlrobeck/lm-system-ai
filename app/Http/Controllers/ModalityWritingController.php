@@ -18,7 +18,7 @@ class ModalityWritingController extends Controller
         if ($file == null) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
+        
         $modality = ModalityWriting::query()->where('test_type','=',$mode)->where('file_id',$id)->get();
         
         return response()->json($modality);

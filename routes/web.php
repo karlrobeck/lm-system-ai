@@ -10,11 +10,11 @@ use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\ModalityReadingController;
+use App\Http\Controllers\ModalityWritingController;
 use App\Models\ModalityAuditory;
 use App\Models\ModalityKinesthetic;
 use App\Models\ModalityReading;
 use App\Models\ModalityVisualization;
-use App\Models\ModalityWriting;
 use App\Models\User as ModelsUser;
 use Illuminate\Http\Request;
 
@@ -32,4 +32,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/api/files/metadata/{id}', [FileController::class, 'getFileMetadata']);
     Route::get('/api/files/{id}', [FileController::class, 'getFile']);
     Route::get('/api/modality/reading/{mode}/{id}',[ModalityReadingController::class,'getReadingTest']);
+    Route::get('/api/modality/writing/{mode}/{id}',[ModalityWritingController::class,'getWritingTest']);
 });

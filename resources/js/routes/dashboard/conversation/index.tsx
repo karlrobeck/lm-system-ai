@@ -1,5 +1,5 @@
 import { A, createAsync, revalidate, useParams } from "@solidjs/router";
-import { Car, User } from "lucide-solid";
+import { Car, Loader2, User } from "lucide-solid";
 import { type Component, createResource, Show, Suspense } from "solid-js";
 import { getFileMetadataById } from "~/api/file";
 import { modality } from "~/api/modality";
@@ -41,6 +41,13 @@ const ConversationPage: Component<{}> = (props) => {
 	*/
 	const reading = createAsync(
 		() => modality.reading.listByContextFile(params.id),
+		{
+			initialValue: undefined,
+		},
+	);
+
+	const writing = createAsync(
+		() => modality.writing.listByContextFile(params.id),
 		{
 			initialValue: undefined,
 		},
@@ -88,7 +95,12 @@ const ConversationPage: Component<{}> = (props) => {
 									<CardDescription>
 										<Show
 											when={file()?.is_ready}
-											fallback={<>Test is not ready</>}
+											fallback={
+												<div class="flex flex-row gap-2.5 items-center">
+													<Loader2 size={16} class="animate-spin" />
+													<span>Test is not ready</span>
+												</div>
+											}
 										>
 											Questions:{" "}
 											{reading()?.filter((v) => v.test_type === "pre")
@@ -96,14 +108,50 @@ const ConversationPage: Component<{}> = (props) => {
 										</Show>
 									</CardDescription>
 								</CardHeader>
-								<CardFooter>
-									<Button
-										as={A}
-										href={`/dashboard/test/pre/reading/${params.id}`}
-									>
-										Start test
-									</Button>
-								</CardFooter>
+								<Show when={file()?.is_ready}>
+									<CardFooter>
+										<Button
+											as={A}
+											href={`/dashboard/test/pre/reading/${params.id}`}
+										>
+											Start test
+										</Button>
+									</CardFooter>
+								</Show>
+							</Card>
+							<Card
+								classList={{
+									"opacity-50": Boolean(file()?.is_ready) === false,
+								}}
+							>
+								<CardHeader>
+									<CardTitle>Writing</CardTitle>
+									<CardDescription>
+										<Show
+											when={file()?.is_ready}
+											fallback={
+												<div class="flex flex-row gap-2.5 items-center">
+													<Loader2 size={16} class="animate-spin" />
+													<span>Test is not ready</span>
+												</div>
+											}
+										>
+											Questions:{" "}
+											{writing()?.filter((v) => v.test_type === "pre")
+												?.length || 0}
+										</Show>
+									</CardDescription>
+								</CardHeader>
+								<Show when={file()?.is_ready}>
+									<CardFooter>
+										<Button
+											as={A}
+											href={`/dashboard/test/pre/writing/${params.id}`}
+										>
+											Start test
+										</Button>
+									</CardFooter>
+								</Show>
 							</Card>
 						</div>
 					</TabsContent>
@@ -119,7 +167,12 @@ const ConversationPage: Component<{}> = (props) => {
 									<CardDescription>
 										<Show
 											when={file()?.is_ready}
-											fallback={<>Test is not ready</>}
+											fallback={
+												<div class="flex flex-row gap-2.5 items-center">
+													<Loader2 size={16} class="animate-spin" />
+													<span>Test is not ready</span>
+												</div>
+											}
 										>
 											Questions:{" "}
 											{reading()?.filter((v) => v.test_type === "post")
@@ -127,14 +180,50 @@ const ConversationPage: Component<{}> = (props) => {
 										</Show>
 									</CardDescription>
 								</CardHeader>
-								<CardFooter>
-									<Button
-										as={A}
-										href={`/dashboard/test/post/reading/${params.id}`}
-									>
-										Start test
-									</Button>
-								</CardFooter>
+								<Show when={file()?.is_ready}>
+									<CardFooter>
+										<Button
+											as={A}
+											href={`/dashboard/test/post/reading/${params.id}`}
+										>
+											Start test
+										</Button>
+									</CardFooter>
+								</Show>
+							</Card>
+							<Card
+								classList={{
+									"opacity-50": Boolean(file()?.is_ready) === false,
+								}}
+							>
+								<CardHeader>
+									<CardTitle>Writing</CardTitle>
+									<CardDescription>
+										<Show
+											when={file()?.is_ready}
+											fallback={
+												<div class="flex flex-row gap-2.5 items-center">
+													<Loader2 size={16} class="animate-spin" />
+													<span>Test is not ready</span>
+												</div>
+											}
+										>
+											Questions:{" "}
+											{writing()?.filter((v) => v.test_type === "post")
+												?.length || 0}
+										</Show>
+									</CardDescription>
+								</CardHeader>
+								<Show when={file()?.is_ready}>
+									<CardFooter>
+										<Button
+											as={A}
+											href={`/dashboard/test/post/writing/${params.id}`}
+										>
+											Start test
+										</Button>
+									</CardFooter>
+								</Show>
 							</Card>
 						</div>
 					</TabsContent>

@@ -153,10 +153,11 @@ export const modality = {
                     },
                 },
             );
-            // join
+
             const preTest = await preTestResponse.json() as Writing[];
             const postTest = await postTestResponse.json() as Writing[];
-            return [...preTest, ...postTest] as Writing[];
+            
+           return [...preTest,...postTest] as Writing[];
         }, "writingListByContextFile"),
     }
 };
