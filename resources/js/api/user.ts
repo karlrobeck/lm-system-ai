@@ -41,8 +41,12 @@ export const getCurrentUser = query(async () => {
             Authorization: `Bearer ${token}`,
         },
     });
-    console.log(response);
-    return await response.json() as User;
+    if(!response.ok) {
+        localStorage.removeItem("token");
+        throw redirect("/login");
+    }
+    const data = await response.json();
+    return data as User;
 }, "getCurrentUser");
 
 export const logout = action(async () => {

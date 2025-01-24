@@ -13,14 +13,14 @@ return new class extends Migration
     {
         Schema::create('modality_visualizations', function (Blueprint $table) {
             $table->id();
-            $table->enum('test_type', ['pre', 'post']);
-            $table->unsignedBigInteger('image_file_id');
-            $table->foreign('image_file_id')->references('id')->on('files')->onDelete('cascade');
+            $table->unsignedBigInteger('file_id');
+            $table->foreign('file_id')->references('id')->on('files');
             $table->string('question');
+            $table->string('image_link');
             $table->json('choices');
+            $table->integer('question_index');
             $table->string('correct_answer');
-            $table->unsignedBigInteger('context_file_id');
-            $table->foreign('context_file_id')->references('id')->on('files')->onDelete('cascade');
+            $table->enum('test_type',['pre','post']);
             $table->timestamps();
         });
     }

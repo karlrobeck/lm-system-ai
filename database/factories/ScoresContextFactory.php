@@ -5,9 +5,9 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ModalityAuditory>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Model>
  */
-class ModalityAuditoryFactory extends Factory
+class ScoresContextFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -17,12 +17,10 @@ class ModalityAuditoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'file_id' => $this->faker->randomDigitNotNull(),
             'question' => $this->faker->sentence(),
-            'choices' => json_encode($this->faker->words(4)),
             'question_index' => $this->faker->numberBetween(1, 100),
-            'correct_answer' => $this->faker->word(),
-            'test_type' => $this->faker->randomElement(['pre', 'post']),
+            'gpt_response' => $this->faker->text(),
+            'is_correct' => $this->faker->boolean(),
         ];
     }
 }

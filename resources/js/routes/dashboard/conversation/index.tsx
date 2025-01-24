@@ -1,7 +1,7 @@
 import { A, createAsync, revalidate, useParams } from "@solidjs/router";
 import { Car, User } from "lucide-solid";
 import { type Component, createResource, Show, Suspense } from "solid-js";
-import { getFileById } from "~/api/file";
+import { getFileMetadataById } from "~/api/file";
 import { modality } from "~/api/modality";
 import {
 	Breadcrumb,
@@ -23,8 +23,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
 const ConversationPage: Component<{}> = (props) => {
 	const params = useParams<{ id: string }>();
-
-	const file = createAsync(() => getFileById(params.id), {
+	const file = createAsync(() => getFileMetadataById(params.id), {
 		initialValue: undefined,
 	});
 	const visualization = createAsync(() =>
@@ -33,8 +32,8 @@ const ConversationPage: Component<{}> = (props) => {
 	const auditory = createAsync(() =>
 		modality.auditory.listByContextFile(params.id),
 	);
-	const readingWriting = createAsync(() =>
-		modality.readingWriting.listByContextFile(params.id),
+	const reading = createAsync(() =>
+		modality.reading.listByContextFile(params.id),
 	);
 
 	return (
@@ -62,11 +61,7 @@ const ConversationPage: Component<{}> = (props) => {
 				</div>
 			</Show>
 			<Show
-				when={
-					visualization() !== undefined &&
-					auditory() !== undefined &&
-					readingWriting() !== undefined
-				}
+				when={reading() !== undefined}
 				fallback={<Skeleton height={24} class="w-1/4" />}
 			>
 				<Tabs>
@@ -78,78 +73,16 @@ const ConversationPage: Component<{}> = (props) => {
 						<div class="grid grid-cols-3 gap-2.5">
 							<Card>
 								<CardHeader>
-									<CardTitle>Visualization Test</CardTitle>
-									<CardDescription>
-										Questions:{" "}
-										{
-											visualization().filter((v) => v.test_type === "pre")
-												.length
-										}
-									</CardDescription>
-								</CardHeader>
-								<CardFooter>
-									<Button
-										as={A}
-										href={`/dashboard/test/pre/visualization/${visualization().at(0).context_file.id}`}
-									>
-										Start test
-									</Button>
-								</CardFooter>
-							</Card>
-							<Card>
-								<CardHeader>
-									<CardTitle>Auditory Test</CardTitle>
-									<CardDescription>
-										Questions:{" "}
-										{auditory().filter((v) => v.test_type === "pre").length}
-									</CardDescription>
-								</CardHeader>
-								<CardFooter>
-									<Button
-										as={A}
-										href={`/dashboard/test/pre/auditory/${auditory().at(0).context_file.id}`}
-									>
-										Start test
-									</Button>
-								</CardFooter>
-							</Card>
-							<Card>
-								<CardHeader>
 									<CardTitle>Reading</CardTitle>
 									<CardDescription>
 										Questions:{" "}
-										{
-											readingWriting().filter(
-												(v) => v.mode === "reading" && v.test_type === "pre",
-											).length
-										}
+										{reading().filter((v) => v.test_type === "pre").length}
 									</CardDescription>
 								</CardHeader>
 								<CardFooter>
 									<Button
 										as={A}
-										href={`/dashboard/test/pre/reading-writing/${readingWriting().at(0).context_file.id}/reading`}
-									>
-										Start test
-									</Button>
-								</CardFooter>
-							</Card>
-							<Card>
-								<CardHeader>
-									<CardTitle>Writing</CardTitle>
-									<CardDescription>
-										Questions:{" "}
-										{
-											readingWriting().filter(
-												(v) => v.mode === "writing" && v.test_type === "pre",
-											).length
-										}
-									</CardDescription>
-								</CardHeader>
-								<CardFooter>
-									<Button
-										as={A}
-										href={`/dashboard/test/pre/reading-writing/${readingWriting().at(0).context_file.id}/writing`}
+										href={`/dashboard/test/pre/reading/${params.id}`}
 									>
 										Start test
 									</Button>
@@ -161,78 +94,16 @@ const ConversationPage: Component<{}> = (props) => {
 						<div class="grid grid-cols-3 gap-2.5">
 							<Card>
 								<CardHeader>
-									<CardTitle>Visualization Test</CardTitle>
-									<CardDescription>
-										Questions:{" "}
-										{
-											visualization().filter((v) => v.test_type === "post")
-												.length
-										}
-									</CardDescription>
-								</CardHeader>
-								<CardFooter>
-									<Button
-										as={A}
-										href={`/dashboard/test/post/visualization/${visualization().at(0).context_file.id}`}
-									>
-										Start test
-									</Button>
-								</CardFooter>
-							</Card>
-							<Card>
-								<CardHeader>
-									<CardTitle>Auditory Test</CardTitle>
-									<CardDescription>
-										Questions:{" "}
-										{auditory().filter((v) => v.test_type === "post").length}
-									</CardDescription>
-								</CardHeader>
-								<CardFooter>
-									<Button
-										as={A}
-										href={`/dashboard/test/post/auditory/${auditory().at(0).context_file.id}`}
-									>
-										Start test
-									</Button>
-								</CardFooter>
-							</Card>
-							<Card>
-								<CardHeader>
 									<CardTitle>Reading</CardTitle>
 									<CardDescription>
 										Questions:{" "}
-										{
-											readingWriting().filter(
-												(v) => v.mode === "reading" && v.test_type === "post",
-											).length
-										}
+										{reading().filter((v) => v.test_type === "post").length}
 									</CardDescription>
 								</CardHeader>
 								<CardFooter>
 									<Button
 										as={A}
-										href={`/dashboard/test/post/reading-writing/${readingWriting().at(0).context_file.id}/reading`}
-									>
-										Start test
-									</Button>
-								</CardFooter>
-							</Card>
-							<Card>
-								<CardHeader>
-									<CardTitle>Writing</CardTitle>
-									<CardDescription>
-										Questions:{" "}
-										{
-											readingWriting().filter(
-												(v) => v.mode === "writing" && v.test_type === "post",
-											).length
-										}
-									</CardDescription>
-								</CardHeader>
-								<CardFooter>
-									<Button
-										as={A}
-										href={`/dashboard/test/post/reading-writing/${readingWriting().at(0).context_file.id}/writing`}
+										href={`/dashboard/test/post/reading/${params.id}`}
 									>
 										Start test
 									</Button>
