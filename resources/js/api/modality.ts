@@ -16,7 +16,9 @@ export type Visualization = {
 export type Auditory = {
     id: string;
     test_type: "pre" | "post";
-    audio_file: File;
+    question: string;
+    choices: string; // JSON stringified array
+    question_index: number;
     correct_answer: string;
     context_file: File;
     created_at: string;
@@ -133,6 +135,38 @@ export const modality = {
             
         }, "readingListByContextFile"),
     },
+    kinesthetic:{
+        listByContextFile: query(async (contextFileId: string) => {
+            const token = localStorage.getItem("token");
+            const preTestResponse = await fetch(
+                `/api/modality/kinesthetic/pre/${contextFileId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            );
+
+            const postTestResponse = await fetch(
+                `/api/modality/kinesthetic/post/${contextFileId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                },
+            );
+            try {
+                // join
+            const preTest = await preTestResponse.json() as Reading[];
+            const postTest = await postTestResponse.json() as Reading[];
+            return [...preTest, ...postTest] as Reading[];
+            } catch (e) {
+                console.error(e);
+                return [] as Reading[];
+            }
+            
+        }, "kinestheticListByContextFile"),
+    },
     writing: {
         listByContextFile: query(async (contextFileId: string) => {
             const token = localStorage.getItem("token");
@@ -156,6 +190,7 @@ export const modality = {
 
             const preTest = await preTestResponse.json() as Writing[];
             const postTest = await postTestResponse.json() as Writing[];
+
             
            return [...preTest,...postTest] as Writing[];
         }, "writingListByContextFile"),

@@ -19,16 +19,37 @@ class FileController extends Controller
         $file = $request->file('file');
         $path = $file->store('uploads', 'public');
 
+        // send GPT request
+        /*$
+            gpt_service = new GPTService();
+            
+            $reading_pre_test_response = $gpt_service->create_reading_modality($path,"pre");
+            $reading_post_test_response = $gpt_service->create_reading_modality($path,"post");
+
+            $writing_pre_test_response = $gpt_service->create_writing_modality($path,"pre");
+            $writing_post_test_response = $gpt_service->create_writing_modality($path,"post");
+
+            $auditory_pre_test_response = $gpt_service->create_auditory_modality($path,"pre");
+            $auditory_post_test_response = $gpt_service->create_auditory_modality($path,"post");
+
+            $kinesthetic_pre_test_response = $gpt_service->create_kinesthetic_modality($path,"pre");
+            $kinesthetic_post_test_response = $gpt_service->create_kinesthetic_modality($path,"post");
+
+            $visualization_pre_test_response = $gpt_service->create_visualization_modality($path,"pre");
+            $visualization_post_test_response = $gpt_service->create_visualization_modality($path,"post");
+        */
+        // save the pre and post test to their respective tables
 
         // save the file metadata in the database
 
         $metadata = Files::create([
             'name' => $file->getClientOriginalName(),
             'path' => $path,
-            'is_ready' => false,
+            'is_ready' => true,
             'type' => $file->getClientMimeType(),
             'owner_id' => $request->user()->id,
         ]);
+        
 
         return $metadata;
     }

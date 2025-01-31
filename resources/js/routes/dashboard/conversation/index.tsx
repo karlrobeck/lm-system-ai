@@ -21,6 +21,45 @@ import {
 import { Skeleton } from "~/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 
+const ModalityCard = ({
+	title,
+	is_ready,
+	length,
+	link,
+}: { title: string; is_ready: boolean; length: number; link: string }) => {
+	return (
+		<Card
+			classList={{
+				"opacity-50": is_ready === false,
+			}}
+		>
+			<CardHeader>
+				<CardTitle>{title}</CardTitle>
+				<CardDescription>
+					<Show
+						when={is_ready}
+						fallback={
+							<div class="flex flex-row gap-2.5 items-center">
+								<Loader2 size={16} class="animate-spin" />
+								<span>Test is not ready</span>
+							</div>
+						}
+					>
+						Questions: {length}
+					</Show>
+				</CardDescription>
+			</CardHeader>
+			<Show when={is_ready}>
+				<CardFooter>
+					<Button as={A} href={link}>
+						Start test
+					</Button>
+				</CardFooter>
+			</Show>
+		</Card>
+	);
+};
+
 const ConversationPage: Component<{}> = (props) => {
 	const params = useParams<{ id: string }>();
 	const file = createAsync(
@@ -35,10 +74,16 @@ const ConversationPage: Component<{}> = (props) => {
 	const visualization = createAsync(() =>
 		modality.visualization.listByContextFile(params.id),
 	);
+	*/
+
+	const kinesthetic = createAsync(() =>
+		modality.kinesthetic.listByContextFile(params.id),
+	);
+
 	const auditory = createAsync(() =>
 		modality.auditory.listByContextFile(params.id),
 	);
-	*/
+
 	const reading = createAsync(
 		() => modality.reading.listByContextFile(params.id),
 		{
@@ -83,150 +128,94 @@ const ConversationPage: Component<{}> = (props) => {
 						<TabsTrigger value="preTest">Pre</TabsTrigger>
 						<TabsTrigger value="postTest">Post</TabsTrigger>
 					</TabsList>
-					<TabsContent value="preTest">
-						<div class="grid grid-cols-3 gap-2.5">
-							<Card
-								classList={{
-									"opacity-50": Boolean(file()?.is_ready) === false,
-								}}
-							>
-								<CardHeader>
-									<CardTitle>Reading</CardTitle>
-									<CardDescription>
-										<Show
-											when={file()?.is_ready}
-											fallback={
-												<div class="flex flex-row gap-2.5 items-center">
-													<Loader2 size={16} class="animate-spin" />
-													<span>Test is not ready</span>
-												</div>
-											}
-										>
-											Questions:{" "}
-											{reading()?.filter((v) => v.test_type === "pre")
-												?.length || 0}
-										</Show>
-									</CardDescription>
-								</CardHeader>
-								<Show when={file()?.is_ready}>
-									<CardFooter>
-										<Button
-											as={A}
-											href={`/dashboard/test/pre/reading/${params.id}`}
-										>
-											Start test
-										</Button>
-									</CardFooter>
-								</Show>
-							</Card>
-							<Card
-								classList={{
-									"opacity-50": Boolean(file()?.is_ready) === false,
-								}}
-							>
-								<CardHeader>
-									<CardTitle>Writing</CardTitle>
-									<CardDescription>
-										<Show
-											when={file()?.is_ready}
-											fallback={
-												<div class="flex flex-row gap-2.5 items-center">
-													<Loader2 size={16} class="animate-spin" />
-													<span>Test is not ready</span>
-												</div>
-											}
-										>
-											Questions:{" "}
-											{writing()?.filter((v) => v.test_type === "pre")
-												?.length || 0}
-										</Show>
-									</CardDescription>
-								</CardHeader>
-								<Show when={file()?.is_ready}>
-									<CardFooter>
-										<Button
-											as={A}
-											href={`/dashboard/test/pre/writing/${params.id}`}
-										>
-											Start test
-										</Button>
-									</CardFooter>
-								</Show>
-							</Card>
-						</div>
-					</TabsContent>
-					<TabsContent value="postTest">
-						<div class="grid grid-cols-3 gap-2.5">
-							<Card
-								classList={{
-									"opacity-50": Boolean(file()?.is_ready) === false,
-								}}
-							>
-								<CardHeader>
-									<CardTitle>Reading</CardTitle>
-									<CardDescription>
-										<Show
-											when={file()?.is_ready}
-											fallback={
-												<div class="flex flex-row gap-2.5 items-center">
-													<Loader2 size={16} class="animate-spin" />
-													<span>Test is not ready</span>
-												</div>
-											}
-										>
-											Questions:{" "}
-											{reading()?.filter((v) => v.test_type === "post")
-												?.length || 0}
-										</Show>
-									</CardDescription>
-								</CardHeader>
-								<Show when={file()?.is_ready}>
-									<CardFooter>
-										<Button
-											as={A}
-											href={`/dashboard/test/post/reading/${params.id}`}
-										>
-											Start test
-										</Button>
-									</CardFooter>
-								</Show>
-							</Card>
-							<Card
-								classList={{
-									"opacity-50": Boolean(file()?.is_ready) === false,
-								}}
-							>
-								<CardHeader>
-									<CardTitle>Writing</CardTitle>
-									<CardDescription>
-										<Show
-											when={file()?.is_ready}
-											fallback={
-												<div class="flex flex-row gap-2.5 items-center">
-													<Loader2 size={16} class="animate-spin" />
-													<span>Test is not ready</span>
-												</div>
-											}
-										>
-											Questions:{" "}
-											{writing()?.filter((v) => v.test_type === "post")
-												?.length || 0}
-										</Show>
-									</CardDescription>
-								</CardHeader>
-								<Show when={file()?.is_ready}>
-									<CardFooter>
-										<Button
-											as={A}
-											href={`/dashboard/test/post/writing/${params.id}`}
-										>
-											Start test
-										</Button>
-									</CardFooter>
-								</Show>
-							</Card>
-						</div>
-					</TabsContent>
+					<Show
+						when={
+							file() !== undefined &&
+							reading() !== undefined &&
+							writing() !== undefined &&
+							auditory() !== undefined &&
+							kinesthetic() !== undefined
+						}
+					>
+						<TabsContent value="preTest">
+							<div class="grid grid-cols-3 gap-2.5">
+								<ModalityCard
+									is_ready={Boolean(file()?.is_ready)}
+									title="Reading"
+									length={
+										reading()?.filter((v) => v.test_type === "pre")?.length || 0
+									}
+									link={`/dashboard/test/pre/reading/${params.id}`}
+								/>
+								<ModalityCard
+									is_ready={Boolean(file()?.is_ready)}
+									title="Writing"
+									length={
+										writing()?.filter((v) => v.test_type === "pre")?.length || 0
+									}
+									link={`/dashboard/test/pre/writing/${params.id}`}
+								/>
+								<ModalityCard
+									is_ready={Boolean(file()?.is_ready)}
+									title="Auditory"
+									length={
+										auditory()?.filter((v) => v.test_type === "pre")?.length ||
+										0
+									}
+									link={`/dashboard/test/pre/auditory/${params.id}`}
+								/>
+								<ModalityCard
+									is_ready={Boolean(file()?.is_ready)}
+									title="Kinesthetic"
+									length={
+										kinesthetic()?.filter((v) => v.test_type === "pre")
+											?.length || 0
+									}
+									link={`/dashboard/test/pre/kinesthetic/${params.id}`}
+								/>
+							</div>
+						</TabsContent>
+						<TabsContent value="postTest">
+							<div class="grid grid-cols-3 gap-2.5">
+								<ModalityCard
+									is_ready={Boolean(file()?.is_ready)}
+									title="Reading"
+									length={
+										reading()?.filter((v) => v.test_type === "post")?.length ||
+										0
+									}
+									link={`/dashboard/test/post/reading/${params.id}`}
+								/>
+								<ModalityCard
+									is_ready={Boolean(file()?.is_ready)}
+									title="Writing"
+									length={
+										writing()?.filter((v) => v.test_type === "post")?.length ||
+										0
+									}
+									link={`/dashboard/test/post/writing/${params.id}`}
+								/>
+								<ModalityCard
+									is_ready={Boolean(file()?.is_ready)}
+									title="Auditory"
+									length={
+										auditory()?.filter((v) => v.test_type === "post")?.length ||
+										0
+									}
+									link={`/dashboard/test/post/auditory/${params.id}`}
+								/>
+								<ModalityCard
+									is_ready={Boolean(file()?.is_ready)}
+									title="Kinesthetic"
+									length={
+										kinesthetic()?.filter((v) => v.test_type === "post")
+											?.length || 0
+									}
+									link={`/dashboard/test/post/kinesthetic/${params.id}`}
+								/>
+							</div>
+						</TabsContent>
+					</Show>
 				</Tabs>
 			</Suspense>
 		</article>

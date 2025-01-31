@@ -1,4 +1,5 @@
 import { createAsync, useParams } from "@solidjs/router";
+import { Speaker } from "lucide-solid";
 import {
 	createEffect,
 	For,
@@ -7,102 +8,190 @@ import {
 	Switch,
 	type Component,
 } from "solid-js";
+import { getFileMetadataById } from "~/api/file";
 import {
 	type Auditory,
 	modality,
-	type ReadingWriting,
+	type Reading,
 	type Visualization,
+	type Writing,
 } from "~/api/modality";
+import { Button } from "~/components/ui/button";
+import {
+	RadioGroup,
+	RadioGroupItem,
+	RadioGroupItemLabel,
+} from "~/components/ui/radio-group";
+import { TextField, TextFieldTextArea } from "~/components/ui/text-field";
 
 const PreTestPage: Component<{}> = (props) => {
 	const params = useParams<{
 		mode: "pre" | "post";
-		modality: "visualization" | "auditory" | "reading-writing";
+		modality:
+			| "visualization"
+			| "auditory"
+			| "reading"
+			| "writing"
+			| "kinesthetic";
 		id: string;
-		readingWritingType?: "reading" | "writing";
 	}>();
 
-	const test = createAsync<Visualization[] | Auditory[] | ReadingWriting[]>(
-		() => {
-			switch (params.modality) {
-				case "visualization":
-					return modality.visualization.listByContextFile(params.id);
-				case "auditory":
-					return modality.auditory.listByContextFile(params.id);
-				case "reading-writing":
-					return modality.readingWriting.listByContextFile(params.id);
-				default:
-					throw new Error("Invalid modality");
-			}
-		},
-	);
+	const file = createAsync(() => getFileMetadataById(params.id));
+
+	const kinesthetic = createAsync(() => {
+		if (params.modality === "kinesthetic") {
+			return modality.kinesthetic.listByContextFile(params.id);
+		}
+		return undefined;
+	});
+
+	const auditory = createAsync(() => {
+		if (params.modality === "auditory") {
+			return modality.auditory.listByContextFile(params.id);
+		}
+		return undefined;
+	});
+
+	const reading = createAsync(() => {
+		if (params.modality === "reading") {
+			return modality.reading.listByContextFile(params.id);
+		}
+		return undefined;
+	});
+
+	const writing = createAsync(() => {
+		if (params.modality === "writing") {
+			return modality.writing.listByContextFile(params.id);
+		}
+		return undefined;
+	});
 
 	return (
-		<Switch>
-			<Match
-				when={
-					params.modality === "reading-writing" &&
-					params.readingWritingType === "reading"
-				}
-			>
-				<For each={test()} fallback={<div>Loading...</div>}>
-					{(item: ReadingWriting, index) => {
-						if (params.mode === item.test_type && item.mode === "reading") {
-							return (
-								<div>
-									<h4 class="lead">Question: {index()}</h4>
-									<p class="paragraph large">{item.question}</p>
-									<ul class="list-disc py-4">
-										<For each={JSON.parse(item.choices)}>
-											{(choice) => <li class="ml-8">{choice}</li>}
+		<article class="space-y-5">
+			<div>
+				<Show when={file() !== undefined}>
+					<p class="muted">{file().name}</p>
+				</Show>
+				<h2 class="heading-2 first-letter:uppercase border-b">
+					{params.modality}
+				</h2>
+			</div>
+			<Show when={reading() !== undefined}>
+				<form class="space-y-5">
+					<div class="space-y-5">
+						<For each={reading().filter((q) => q.test_type === params.mode)}>
+							{(question) => (
+								<div class="border-b">
+									<div>
+										<span class="muted">{question.question_index}.</span>{" "}
+										{question.question}
+									</div>
+									<RadioGroup
+										name={`${question.question_index}`}
+										class="flex flex-col gap-2.5 p-4"
+									>
+										<For each={JSON.parse(question.choices)}>
+											{(choice) => (
+												<RadioGroupItem value={choice}>
+													<RadioGroupItemLabel>{choice}</RadioGroupItemLabel>
+												</RadioGroupItem>
+											)}
 										</For>
-									</ul>
+									</RadioGroup>
 								</div>
-							);
-						}
-					}}
-				</For>
-			</Match>
-			<Match
-				when={
-					params.modality === "reading-writing" &&
-					params.readingWritingType === "writing"
-				}
-			>
-				<For each={test()} fallback={<div>Loading...</div>}>
-					{(item: ReadingWriting, index) => {
-						if (params.mode === item.test_type) {
-							return (
+							)}
+						</For>
+					</div>
+					<Button>Submit Answer</Button>
+				</form>
+			</Show>
+			<Show when={writing() !== undefined}>
+				<form>
+					<For each={writing().filter((q) => q.test_type === params.mode)}>
+						{(question) => (
+							<div>
 								<div>
-									<h1 class="lead">Question: {index() + 1}</h1>
-									<p class="paragraph large">{item.question}</p>
+									<span class="muted">{question.question_index}.</span>{" "}
+									{question.question}
 								</div>
-							);
-						}
-					}}
-				</For>
-			</Match>
-			<Match when={params.modality === "visualization"}>
-				<For each={test()} fallback={<div>Loading...</div>}>
-					{(item: Visualization, index) => {
-						if (params.mode === item.test_type) {
-							return (
+								<TextField class="m-4">
+									<TextFieldTextArea
+										name={`${question.question_index}`}
+										placeholder="Your answer"
+									/>
+								</TextField>
+							</div>
+						)}
+					</For>
+					<Button>Submit Answer</Button>
+				</form>
+			</Show>
+			<Show when={auditory() !== undefined}>
+				<form>
+					<For each={auditory().filter((q) => q.test_type === params.mode)}>
+						{(question) => (
+							<div>
 								<div>
-									<h1 class="lead">Question: {index() + 1}</h1>
-									<img src={item.image_file.path} alt="Not Available" />
-									<p class="paragraph large">{item.question}</p>
-									<ul class="list-disc py-4">
-										<For each={JSON.parse(item.choices)}>
-											{(choice) => <li class="ml-8">{choice}</li>}
-										</For>
-									</ul>
+									<span class="muted">{question.question_index}.</span>{" "}
+									<Button
+										class="w-1/2 "
+										size="sm"
+										variant="outline"
+										onClick={() => {
+											const utterance = new SpeechSynthesisUtterance(
+												question.question,
+											);
+											utterance.voice = speechSynthesis
+												.getVoices()
+												.find(
+													(voice) => voice.name === "Google UK English Male",
+												);
+											speechSynthesis.speak(utterance);
+										}}
+									>
+										Speak <Speaker size={16} />
+									</Button>
 								</div>
-							);
-						}
-					}}
-				</For>
-			</Match>
-		</Switch>
+								<RadioGroup
+									name={`${question.question_index}`}
+									class="flex flex-col gap-2.5 p-4"
+								>
+									<For each={JSON.parse(question.choices)}>
+										{(choice) => (
+											<RadioGroupItem value={choice}>
+												<RadioGroupItemLabel>{choice}</RadioGroupItemLabel>
+											</RadioGroupItem>
+										)}
+									</For>
+								</RadioGroup>
+							</div>
+						)}
+					</For>
+					<Button>Submit Answer</Button>
+				</form>
+			</Show>
+			<Show when={kinesthetic() !== undefined}>
+				<form>
+					<For each={kinesthetic().filter((q) => q.test_type === params.mode)}>
+						{(question) => (
+							<div>
+								<div>
+									<span class="muted">{question.question_index}.</span>{" "}
+									{question.question}
+								</div>
+								<TextField class="m-4">
+									<TextFieldTextArea
+										name={`${question.question_index}`}
+										placeholder="Your answer"
+									/>
+								</TextField>
+							</div>
+						)}
+					</For>
+					<Button>Submit Answer</Button>
+				</form>
+			</Show>
+		</article>
 	);
 };
 
