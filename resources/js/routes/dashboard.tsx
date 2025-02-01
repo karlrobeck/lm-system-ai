@@ -15,7 +15,7 @@ import {
 	Sun,
 	User,
 } from "lucide-solid";
-import { createResource, For, Show } from "solid-js";
+import { createEffect, createResource, For, onMount, Show } from "solid-js";
 import { getCurrentUser, getUserById, logout } from "~/api/user";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
@@ -53,6 +53,7 @@ import ProfileDialog from "./dashboard/profile-dialog";
 import { useColorMode } from "@kobalte/core";
 import { Skeleton } from "~/components/ui/skeleton";
 import UploadDialog from "./dashboard/upload-dialog";
+import AssessmentFormDialog from "./dashboard/assessment-form-dialog";
 
 const DashboardLayout = (props: RouteSectionProps) => {
 	if (localStorage.getItem("token") === null) {
@@ -61,6 +62,12 @@ const DashboardLayout = (props: RouteSectionProps) => {
 
 	const { setColorMode } = useColorMode();
 	const user = createAsync(() => getCurrentUser());
+
+	createEffect(() => {
+		if (user().has_assessment === 0) {
+			document.getElementById("assessment-form-dialog")?.click();
+		}
+	});
 
 	return (
 		<SidebarProvider>
@@ -77,7 +84,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
 									onClick={() => {
 										const dialog = document.getElementById(
 											"upload-dialog",
-										)! as HTMLButtonElement;
+										) as HTMLButtonElement;
 										dialog.click();
 									}}
 								>
@@ -175,7 +182,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
 									onClick={() => {
 										const dialog = document.getElementById(
 											"profile-dialog",
-										)! as HTMLButtonElement;
+										) as HTMLButtonElement;
 										dialog.click();
 									}}
 								>
@@ -220,6 +227,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
 					<SidebarTrigger />
 				</header>
 				<ProfileDialog />
+				<AssessmentFormDialog />
 				<div class="p-4">{props.children}</div>
 			</main>
 		</SidebarProvider>
