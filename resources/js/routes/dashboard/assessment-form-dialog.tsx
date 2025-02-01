@@ -1,6 +1,7 @@
-import { createAsync } from "@solidjs/router";
+import { action, createAsync } from "@solidjs/router";
 import { For, Show, type Component } from "solid-js";
 import { getCurrentUser } from "~/api/user";
+import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
 import {
 	Dialog,
@@ -363,6 +364,7 @@ const FormQuestion: Component<{
 						<div class="flex items-center gap-2">
 							<Checkbox
 								name={`assessment-question-${option.type}-${props.question_index}`}
+								value={option.value}
 							/>
 							<p class="small">{option.value}</p>
 						</div>
@@ -373,8 +375,29 @@ const FormQuestion: Component<{
 	);
 };
 
+const assessmentFormAction = action(async (formData: FormData) => {
+	const token = localStorage.getItem("token");
+	const csrfToken = document
+		.querySelector('meta[name="csrf-token"]')
+		.getAttribute("content");
+	const userResponse = Array.from(formData.entries());
+
+	const response = await fetch("/api/assessment/submit", {
+		method: "POST",
+		headers: {
+			Authorization: `Bearer ${token}`,
+			"X-CSRF-TOKEN": csrfToken,
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify(userResponse),
+	});
+
+	console.log(response.status);
+});
+
 const AssessmentFormDialog: Component<{}> = (props) => {
 	const user = createAsync(() => getCurrentUser());
+
 	return (
 		<Show when={user() !== undefined}>
 			<Dialog open={Boolean(user().has_assessment) === false}>
@@ -389,7 +412,7 @@ const AssessmentFormDialog: Component<{}> = (props) => {
 							not apply.
 						</DialogDescription>
 					</DialogHeader>
-					<form>
+					<form method="post" action={assessmentFormAction}>
 						<For each={FORM_QUESTIONS}>
 							{(question, index) => (
 								<FormQuestion
@@ -399,6 +422,7 @@ const AssessmentFormDialog: Component<{}> = (props) => {
 								/>
 							)}
 						</For>
+						<Button type="submit">Submit</Button>
 					</form>
 				</DialogContent>
 			</Dialog>

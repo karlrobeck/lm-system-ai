@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('level');
             $table->boolean('has_assessment')->default(false);
+            $table->json('assessment_content')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

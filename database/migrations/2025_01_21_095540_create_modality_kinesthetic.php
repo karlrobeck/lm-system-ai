@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('file_id');
             $table->foreign('file_id')->references('id')->on('files');
-            $table->string('question');
-            $table->string('context_answer');
-            $table->string('question_index');
+            $table->text('question');
+            $table->text('context_answer');
+            $table->text('question_index');
             $table->enum('test_type',['pre','post']);
             $table->timestamps();
         });

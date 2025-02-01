@@ -17,7 +17,9 @@ class AssessmentFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'rank' => 1,
+            'modality' => $this->faker->randomElement(['reading', 'writing', 'auditory', 'kinesthetic','visualization']),
+            'message' => $this->faker->sentence(),
         ];
     }
 }
