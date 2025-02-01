@@ -48,7 +48,34 @@ export type Writing = {
     file_id: string;
 }
 
+export type AssessmentRanking = {
+    id: number;
+    user_id: number;
+    file_id: number;
+    rank: number;
+    modality: "reading" | "writing" | "visualization" | "auditory" | "kinesthetic";
+    message: string;
+    is_failed: boolean;
+    pre_test_passed: boolean;
+    post_test_passed: boolean;
+    created_at: string;
+    updated_at: string;
+};
+
 export const modality = {
+    assessment:{
+        getAllRanking:query(async () => {
+            const token = localStorage.getItem("token");
+            const response = await fetch('/api/assessment/ranking', {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            const payload = await response.json();
+
+            return payload as AssessmentRanking[];
+        },"assessmentGetAllRanking"),
+    },
     visualization: {
         listByContextFile: query(async (contextFileId: string) => {
             const token = localStorage.getItem("token");

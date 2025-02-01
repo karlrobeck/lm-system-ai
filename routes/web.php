@@ -37,5 +37,6 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/api/modality/writing/{mode}/{id}',[ModalityWritingController::class,'getWritingTest']);
     Route::get('/api/modality/auditory/{mode}/{id}',[ModalityAuditoryController::class,'getAuditoryTest']);
     Route::get('/api/modality/kinesthetic/{mode}/{id}',[ModalityKinestheticController::class,'getKinestheticTest']);
+    Route::get('/api/assessment/ranking',[AssessmentController::class,'ranking']);
     Route::post("/api/assessment/submit",[AssessmentController::class,'store']);
 });

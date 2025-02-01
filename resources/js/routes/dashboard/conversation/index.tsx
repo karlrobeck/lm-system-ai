@@ -1,6 +1,14 @@
 import { A, createAsync, revalidate, useParams } from "@solidjs/router";
 import { Car, Loader2, User } from "lucide-solid";
-import { type Component, createResource, Show, Suspense } from "solid-js";
+import {
+	type Component,
+	createResource,
+	For,
+	Match,
+	Show,
+	Suspense,
+	Switch,
+} from "solid-js";
 import { getFileMetadataById } from "~/api/file";
 import { modality } from "~/api/modality";
 import {
@@ -76,6 +84,8 @@ const ConversationPage: Component<{}> = (props) => {
 	);
 	*/
 
+	const assessment = createAsync(() => modality.assessment.getAllRanking());
+
 	const kinesthetic = createAsync(() =>
 		modality.kinesthetic.listByContextFile(params.id),
 	);
@@ -134,45 +144,64 @@ const ConversationPage: Component<{}> = (props) => {
 							reading() !== undefined &&
 							writing() !== undefined &&
 							auditory() !== undefined &&
-							kinesthetic() !== undefined
+							kinesthetic() !== undefined &&
+							assessment() !== undefined
 						}
 					>
 						<TabsContent value="preTest">
 							<div class="grid grid-cols-3 gap-2.5">
-								<ModalityCard
-									is_ready={Boolean(file()?.is_ready)}
-									title="Reading"
-									length={
-										reading()?.filter((v) => v.test_type === "pre")?.length || 0
-									}
-									link={`/dashboard/test/pre/reading/${params.id}`}
-								/>
-								<ModalityCard
-									is_ready={Boolean(file()?.is_ready)}
-									title="Writing"
-									length={
-										writing()?.filter((v) => v.test_type === "pre")?.length || 0
-									}
-									link={`/dashboard/test/pre/writing/${params.id}`}
-								/>
-								<ModalityCard
-									is_ready={Boolean(file()?.is_ready)}
-									title="Auditory"
-									length={
-										auditory()?.filter((v) => v.test_type === "pre")?.length ||
-										0
-									}
-									link={`/dashboard/test/pre/auditory/${params.id}`}
-								/>
-								<ModalityCard
-									is_ready={Boolean(file()?.is_ready)}
-									title="Kinesthetic"
-									length={
-										kinesthetic()?.filter((v) => v.test_type === "pre")
-											?.length || 0
-									}
-									link={`/dashboard/test/pre/kinesthetic/${params.id}`}
-								/>
+								<For each={assessment()}>
+									{(a) => {
+										// get the highest rank that is not failed
+										return (
+											<For
+												each={[
+													"reading",
+													"writing",
+													"auditory",
+													"visualization",
+													"kinesthetic",
+												]}
+											>
+												{(modality) => {
+													const lowestRank = assessment()
+														.filter(
+															(v) =>
+																Boolean(v.pre_test_passed) === false &&
+																Boolean(v.is_failed) === false,
+														)
+														.reduce((prev, curr) =>
+															prev.rank < curr.rank ? prev : curr,
+														);
+													return (
+														<Show when={a.modality === modality}>
+															<ModalityCard
+																is_ready={lowestRank.rank === a.rank}
+																title={
+																	modality.charAt(0).toUpperCase() +
+																	modality.slice(1)
+																}
+																length={
+																	{
+																		reading: reading,
+																		writing: writing,
+																		auditory: auditory,
+																		visualization: () => [],
+																		kinesthetic: kinesthetic,
+																	}
+																		[modality]()
+																		?.filter((v) => v.test_type === "pre")
+																		?.length || 0
+																}
+																link={`/dashboard/test/pre/${modality}/${params.id}`}
+															/>
+														</Show>
+													);
+												}}
+											</For>
+										);
+									}}
+								</For>
 							</div>
 						</TabsContent>
 						<TabsContent value="postTest">
