@@ -206,42 +206,58 @@ const ConversationPage: Component<{}> = (props) => {
 						</TabsContent>
 						<TabsContent value="postTest">
 							<div class="grid grid-cols-3 gap-2.5">
-								<ModalityCard
-									is_ready={Boolean(file()?.is_ready)}
-									title="Reading"
-									length={
-										reading()?.filter((v) => v.test_type === "post")?.length ||
-										0
-									}
-									link={`/dashboard/test/post/reading/${params.id}`}
-								/>
-								<ModalityCard
-									is_ready={Boolean(file()?.is_ready)}
-									title="Writing"
-									length={
-										writing()?.filter((v) => v.test_type === "post")?.length ||
-										0
-									}
-									link={`/dashboard/test/post/writing/${params.id}`}
-								/>
-								<ModalityCard
-									is_ready={Boolean(file()?.is_ready)}
-									title="Auditory"
-									length={
-										auditory()?.filter((v) => v.test_type === "post")?.length ||
-										0
-									}
-									link={`/dashboard/test/post/auditory/${params.id}`}
-								/>
-								<ModalityCard
-									is_ready={Boolean(file()?.is_ready)}
-									title="Kinesthetic"
-									length={
-										kinesthetic()?.filter((v) => v.test_type === "post")
-											?.length || 0
-									}
-									link={`/dashboard/test/post/kinesthetic/${params.id}`}
-								/>
+								<For each={assessment()}>
+									{(a) => {
+										// get the highest rank that is not failed
+										return (
+											<For
+												each={[
+													"reading",
+													"writing",
+													"auditory",
+													"visualization",
+													"kinesthetic",
+												]}
+											>
+												{(modality) => {
+													const lowestRank = assessment()
+														.filter(
+															(v) =>
+																Boolean(v.pre_test_passed) === true &&
+																Boolean(v.is_failed) === false,
+														)
+														.reduce((prev, curr) =>
+															prev.rank < curr.rank ? prev : curr,
+														);
+													return (
+														<Show when={a.modality === modality}>
+															<ModalityCard
+																is_ready={lowestRank.rank === a.rank}
+																title={
+																	modality.charAt(0).toUpperCase() +
+																	modality.slice(1)
+																}
+																length={
+																	{
+																		reading: reading,
+																		writing: writing,
+																		auditory: auditory,
+																		visualization: () => [],
+																		kinesthetic: kinesthetic,
+																	}
+																		[modality]()
+																		?.filter((v) => v.test_type === "post")
+																		?.length || 0
+																}
+																link={`/dashboard/test/post/${modality}/${params.id}`}
+															/>
+														</Show>
+													);
+												}}
+											</For>
+										);
+									}}
+								</For>
 							</div>
 						</TabsContent>
 					</Show>

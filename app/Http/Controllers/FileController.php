@@ -14,9 +14,9 @@ class FileController extends Controller
     private $quizService;
 
     // Inject the QuizService via the controller's constructor
-    public function __construct(QuizService $quizService){
-        $this->quizService = $quizService;
-    }
+    // public function __construct(QuizService $quizService){
+        // $this->quizService = $quizService;
+    // }
     public function uploadFile(Request $request) {
 
         $request->validate([
@@ -28,6 +28,8 @@ class FileController extends Controller
 
         // Read the content of the file
         $content = Storage::disk('public')->get($path);
+
+        /*
         
         // Generate pre-test and post-test for each modality
         $reading_pre_test_response = $this->quizService->create_reading_modality($content, 'pre');
@@ -153,7 +155,7 @@ class FileController extends Controller
             'image_prompt'   => $visualization_post_test_response['image_prompt'],
             'image_url'      => $visualization_post_test_response['image_url'],
             'test_type'      => $visualization_post_test_response['test_type'],
-        ]);
+        ]);*/
 
         return response()->json(['message' => 'File uploaded and tests generated successfully.']);
         
@@ -176,15 +178,12 @@ class FileController extends Controller
     }
 
     public function getFileMetadata(Request $request) {
-        // convert $id to an integer
         $user = Auth::guard('sanctum')->user();
         $id = (int)$request->route('id');
         $file = Files::query()->where('id', '=', $id)->where('owner_id', '=', $user->id)->with('user')->first();
-        
         if($file == null) {
             return response()->json(['error' => 'File not found'], 404);
         }
-
         return $file;
     }
 }
