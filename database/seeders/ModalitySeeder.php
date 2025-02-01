@@ -49,6 +49,7 @@ class ModalitySeeder extends Seeder
             'user_id' => $user->id,
             'file_id' => $db_file->id,
             'rank' => 3,
+            'pre_test_passed' => true,
             'modality' => 'auditory',
             'message' => 'Auditory is ranked third based on your assessment because it is a moderate modality for you.',
         ]);

@@ -1,5 +1,5 @@
 import { A, createAsync, revalidate, useParams } from "@solidjs/router";
-import { Car, Loader2, User } from "lucide-solid";
+import { Car, Check, Loader2, User } from "lucide-solid";
 import {
 	type Component,
 	createResource,
@@ -32,9 +32,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 const ModalityCard = ({
 	title,
 	is_ready,
+	is_passed,
 	length,
 	link,
-}: { title: string; is_ready: boolean; length: number; link: string }) => {
+}: {
+	title: string;
+	is_ready: boolean;
+	length: number;
+	link: string;
+	is_passed: boolean;
+}) => {
 	return (
 		<Card
 			classList={{
@@ -48,8 +55,18 @@ const ModalityCard = ({
 						when={is_ready}
 						fallback={
 							<div class="flex flex-row gap-2.5 items-center">
-								<Loader2 size={16} class="animate-spin" />
-								<span>Test is not ready</span>
+								<Show
+									fallback={
+										<>
+											<Loader2 size={16} class="animate-spin" />
+											<span>Test is not ready</span>
+										</>
+									}
+									when={is_passed}
+								>
+									<Check size={16} />
+									<span>Test passed</span>
+								</Show>
 							</div>
 						}
 					>
@@ -167,8 +184,8 @@ const ConversationPage: Component<{}> = (props) => {
 													const lowestRank = assessment()
 														.filter(
 															(v) =>
-																Boolean(v.pre_test_passed) === false &&
-																Boolean(v.is_failed) === false,
+																Boolean(v.is_failed) === false ||
+																Boolean(v.pre_test_passed) === false,
 														)
 														.reduce(
 															(prev, curr) =>
@@ -178,7 +195,11 @@ const ConversationPage: Component<{}> = (props) => {
 													return (
 														<Show when={a.modality === modality}>
 															<ModalityCard
-																is_ready={lowestRank.rank === a.rank}
+																is_passed={Boolean(a.pre_test_passed)}
+																is_ready={
+																	lowestRank.rank === a.rank &&
+																	Boolean(a.pre_test_passed) === true
+																}
 																title={
 																	modality.charAt(0).toUpperCase() +
 																	modality.slice(1)
@@ -232,6 +253,7 @@ const ConversationPage: Component<{}> = (props) => {
 													return (
 														<Show when={a.modality === modality}>
 															<ModalityCard
+																is_passed={Boolean(a.post_test_passed)}
 																is_ready={
 																	lowestRank !== undefined &&
 																	lowestRank.rank === a.rank
