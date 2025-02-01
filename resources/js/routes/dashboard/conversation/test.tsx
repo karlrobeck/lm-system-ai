@@ -76,8 +76,8 @@ const PreTestPage: Component<{}> = (props) => {
 					{params.modality}
 				</h2>
 			</div>
-			<Show when={reading() !== undefined}>
-				<form class="space-y-5">
+			<form class="space-y-5">
+				<Show when={reading() !== undefined}>
 					<div class="space-y-5">
 						<For each={reading().filter((q) => q.test_type === params.mode)}>
 							{(question) => (
@@ -103,10 +103,8 @@ const PreTestPage: Component<{}> = (props) => {
 						</For>
 					</div>
 					<Button>Submit Answer</Button>
-				</form>
-			</Show>
-			<Show when={writing() !== undefined}>
-				<form>
+				</Show>
+				<Show when={writing() !== undefined}>
 					<For each={writing().filter((q) => q.test_type === params.mode)}>
 						{(question) => (
 							<div>
@@ -124,10 +122,8 @@ const PreTestPage: Component<{}> = (props) => {
 						)}
 					</For>
 					<Button>Submit Answer</Button>
-				</form>
-			</Show>
-			<Show when={auditory() !== undefined}>
-				<form>
+				</Show>
+				<Show when={auditory() !== undefined}>
 					<For each={auditory().filter((q) => q.test_type === params.mode)}>
 						{(question) => (
 							<div>
@@ -168,10 +164,8 @@ const PreTestPage: Component<{}> = (props) => {
 						)}
 					</For>
 					<Button>Submit Answer</Button>
-				</form>
-			</Show>
-			<Show when={kinesthetic() !== undefined}>
-				<form>
+				</Show>
+				<Show when={kinesthetic() !== undefined}>
 					<For each={kinesthetic().filter((q) => q.test_type === params.mode)}>
 						{(question) => (
 							<div>
@@ -189,8 +183,8 @@ const PreTestPage: Component<{}> = (props) => {
 						)}
 					</For>
 					<Button>Submit Answer</Button>
-				</form>
-			</Show>
+				</Show>
+			</form>
 		</article>
 	);
 };

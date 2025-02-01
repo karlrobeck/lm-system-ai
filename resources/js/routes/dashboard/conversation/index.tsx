@@ -1,5 +1,5 @@
 import { A, createAsync, revalidate, useParams } from "@solidjs/router";
-import { Car, Check, Loader2, User } from "lucide-solid";
+import { Car, Check, Loader2, Notebook, User } from "lucide-solid";
 import {
 	type Component,
 	createResource,
@@ -148,6 +148,10 @@ const ConversationPage: Component<{}> = (props) => {
 					<h4 class="heading-4">{file().name}</h4>
 					<span class="lead small">{file().user.name}</span>
 				</div>
+				<Button variant="outline" as={A} href={`/dashboard/study/${params.id}`}>
+					<Notebook size={16} />
+					Show Generated Notes
+				</Button>
 			</Show>
 			<Suspense fallback={<Skeleton height={24} class="w-1/4" />}>
 				<Tabs>

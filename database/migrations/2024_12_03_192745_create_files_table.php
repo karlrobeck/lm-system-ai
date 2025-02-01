@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
             $table->string('path');
             $table->string('name');
+            $table->text('study_notes');
             $table->string('gpt_batch_id')->nullable();
             $table->boolean('is_ready')->default(false);
             $table->string('type');

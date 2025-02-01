@@ -9,7 +9,7 @@ export type File = {
     name: string;
     type: "markdown" | "pdf" | "image" | "audio";
     is_ready:boolean;
-    gpt_batch_id: string;
+    study_notes:string;
     created_at: string;
     updated_at: string;
     user: User;
