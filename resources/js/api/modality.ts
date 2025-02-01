@@ -116,7 +116,7 @@ export const modality = {
                 },
             );
             const postTestResponse = await fetch(
-                `/api/modality/auditory/pre/${contextFileId}`,
+                `/api/modality/auditory/post/${contextFileId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -126,7 +126,7 @@ export const modality = {
 
             const preTest = await preTestResponse.json() as Auditory[];
             const postTest = await postTestResponse.json() as Auditory[];
-
+            console.log(preTest, postTest);
             return [...preTest, ...postTest] as Auditory[];
         }, "auditoryListByContextFile"),
     },

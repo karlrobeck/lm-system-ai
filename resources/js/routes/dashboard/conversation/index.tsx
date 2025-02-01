@@ -170,8 +170,10 @@ const ConversationPage: Component<{}> = (props) => {
 																Boolean(v.pre_test_passed) === false &&
 																Boolean(v.is_failed) === false,
 														)
-														.reduce((prev, curr) =>
-															prev.rank < curr.rank ? prev : curr,
+														.reduce(
+															(prev, curr) =>
+																prev.rank < curr.rank ? prev : curr,
+															{ rank: Number.POSITIVE_INFINITY },
 														);
 													return (
 														<Show when={a.modality === modality}>
@@ -221,18 +223,19 @@ const ConversationPage: Component<{}> = (props) => {
 											>
 												{(modality) => {
 													const lowestRank = assessment()
-														.filter(
-															(v) =>
-																Boolean(v.pre_test_passed) === true &&
-																Boolean(v.is_failed) === false,
-														)
-														.reduce((prev, curr) =>
-															prev.rank < curr.rank ? prev : curr,
+														.filter((v) => Boolean(v.pre_test_passed) === true)
+														.reduce(
+															(prev, curr) =>
+																prev.rank < curr.rank ? prev : curr,
+															{ rank: Number.POSITIVE_INFINITY },
 														);
 													return (
 														<Show when={a.modality === modality}>
 															<ModalityCard
-																is_ready={lowestRank.rank === a.rank}
+																is_ready={
+																	lowestRank !== undefined &&
+																	lowestRank.rank === a.rank
+																}
 																title={
 																	modality.charAt(0).toUpperCase() +
 																	modality.slice(1)
