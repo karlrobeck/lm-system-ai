@@ -4,9 +4,10 @@ namespace Database\Seeders;
 
 use App\Models\Files;
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Services\QuizService;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
+use Smalot\PdfParser\Parser;
 
 class FileSeeder extends Seeder
 {
@@ -15,73 +16,50 @@ class FileSeeder extends Seeder
      */
     public function run(): void
     {
-        // create a file with a text content. and save the file to the database
-        $content = "
-# No Man Is an Island 
+        // Define the PDF filename and its source location.
+        $pdfFilename = 'yourstudyfile.pdf';
+        $pdfSourcePath = resource_path($pdfFilename);
 
-No man is an island,
+        // Check that the file exists.
+        if (!file_exists($pdfSourcePath)) {
+            $this->command->error("The file {$pdfFilename} does not exist in the resources directory. Please add a valid PDF file.");
+            return;
+        }
 
-Entire of itself;
+        // Save the PDF to the public disk.
+        Storage::disk('public')->put($pdfFilename, file_get_contents($pdfSourcePath));
 
-Every man is a piece of the continent,
+        // Get the file's MIME type from the public disk.
+        $mimeType = Storage::disk('public')->mimeType($pdfFilename);
 
-A part of the main.
+        // Extract text from the PDF file.
+        $extractedText = '';
+        if (strpos($mimeType, 'pdf') !== false) {
+            $parser = new Parser();
+            $fullPath = storage_path('app/public/' . $pdfFilename);
+            $pdf = $parser->parseFile($fullPath);
+            $extractedText = $pdf->getText();
+        } else {
+            // Fallback: treat the file as plain text.
+            $extractedText = Storage::disk('public')->get($pdfFilename);
+        }
 
-If a clod be washed away by the sea,
+        // Use QuizService (which uses ChatGPT) to generate study notes from the extracted text.
+        $quizService = new QuizService();
+        $prompt = "Using ChatGPT, generate a concise summary and key study notes based on the following text:\n\n" . $extractedText;
+        $studyNotes = $quizService->generateStudyNotes($prompt);
 
-Europe is the less,
-
-As well as if a promontory were:
-
-As well as if a manor of thy friend's
-
-Or of thine own were.
-
-Any man's death diminishes me,
-
-Because I am involved in mankind.
-
-And therefore never send to know for whom the bell tolls;
-
-It tolls for thee.
-        ";
-        $filename = 'nomanisanisland.txt';
-        // Save the file to the storage
-        Storage::put($filename, $content);
-
-        $study_notes = "
-# Keynotes: *No Man Is an Island* by John Donne
-
-- **Interconnectedness of Humanity**  
-    - No person exists in isolation; everyone is part of a greater whole.  
-    - Each individual contributes to the collective existence of mankind.  
-
-- **Metaphor of the Continent**  
-    - Humanity is compared to a continent, where each person is a piece of the whole.  
-    - The loss of one part (a person) affects the entire structure.  
-
-- **Impact of Loss**  
-    - The death or suffering of any individual affects all of humanity.  
-    - People should recognize their shared responsibility and connection.  
-
-- **Symbolism of the Bell**  
-    - The tolling of the funeral bell signifies a universal reminder of mortality.  
-    - It emphasizes that death is not just an individual event but a loss to all.  
-
-- **Moral Reflection**  
-    - Encourages empathy, unity, and awareness of shared human experiences.  
-    - Reinforces the idea that one should not remain indifferent to the struggles of others.  
-
-";
-
+        // Retrieve an owner for the file record (for example, user with ID 1).
         $owner = User::query()->find(1);
-        
+
+        // Create the file record in the database with the generated study notes.
         Files::factory()->create([
-            'owner_id' => $owner->id,
-            'name' => $filename,
-            'path' => $filename,
-            'study_notes' => $study_notes,
-            'is_ready' => true,
+            'owner_id'    => $owner->id,
+            'name'        => $pdfFilename,
+            'path'        => $pdfFilename,
+            'study_notes' => $studyNotes,
+            'is_ready'    => true,
+            'type'        => $mimeType,
         ]);
     }
 }

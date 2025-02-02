@@ -4,23 +4,23 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Files extends Model
 {
-    /** @use HasFactory<\Database\Factories\FilesFactory> */
     use HasFactory;
 
     protected $fillable = [
         'path',
         'name',
-        'ready',
+        'study_notes',
+        'is_ready',
         'type',
         'owner_id',
     ];
 
-    public function user(): HasOne
+    public function user(): BelongsTo
     {
-        return $this->hasOne(User::class, 'id', 'owner_id');
+        return $this->belongsTo(User::class, 'owner_id');
     }
 }

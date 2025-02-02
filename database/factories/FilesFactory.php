@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Files;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -9,14 +11,17 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class FilesFactory extends Factory
 {
+    protected $model = Files::class;
+
     public function definition(): array
     {
         return [
-            'path' => $this->faker->url(),
-            'name' => $this->faker->sentence(),
-            'is_ready' => false,
-            'gpt_batch_id' => $this->faker->uuid(),
-            'type' => $this->faker->randomElement(['pdf', 'markdown', 'image']),
+            'path'         => $this->faker->url(),
+            'name'         => $this->faker->sentence(),
+            'study_notes'  => $this->faker->paragraph(),
+            'is_ready'     => $this->faker->boolean(),
+            'type'         => $this->faker->randomElement(['pdf', 'markdown', 'image']),
+            'owner_id'     => User::factory(),
         ];
     }
 }

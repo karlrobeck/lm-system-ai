@@ -16,21 +16,23 @@ class FileController extends Controller
 {
     public function uploadFile(Request $request)
     {
+        // Validate that a file is provided and is a valid file
         $request->validate([
             'file' => 'required|file',
         ]);
 
-        // Instantiate QuizService (which now uses ChatGPT internally)
+        // Instantiate QuizService (which internally calls ChatGPT)
         $quizService = new QuizService();
 
         $file = $request->file('file');
         $path = $file->store('uploads', 'public');
 
-        // Parse file content (plain text or PDF)
+        // Parse file content (if PDF, extract text; if plain text, read directly)
         $content = $this->parseFileContent($path);
 
-        // Create a custom prompt for ChatGPT
-        $prompt = "Using ChatGPT, generate a concise summary and key study notes, then create test questions based on the following text:\n\n" . $content;
+        // Create a custom prompt to generate study notes and test questions
+        $prompt = "Using ChatGPT, generate a concise summary and key study notes, then create test questions based on the following text:\n\n" 
+            . $content;
         
         // Generate study notes via ChatGPT
         $studyNotes = $quizService->generateStudyNotes($prompt);
@@ -57,7 +59,7 @@ class FileController extends Controller
             }
         }
 
-        // Save the file metadata along with the generated study notes in the database
+        // Save the file metadata along with the generated study notes to the database
         $metadata = Files::create([
             'name'         => $file->getClientOriginalName(),
             'path'         => $path,
@@ -67,7 +69,7 @@ class FileController extends Controller
             'owner_id'     => $request->user()->id,
         ]);
 
-        // Map response keys to model classes (example: visualization tests)
+        // Map response keys to model classes (example mapping for visualization tests)
         $responseToModelMap = [
             'visualization_pre_test'  => VisualizationPreTest::class,
             'visualization_post_test' => VisualizationPostTest::class,
@@ -84,7 +86,7 @@ class FileController extends Controller
                     'test_type'      => $responseData['test_type'] ?? null,
                 ];
 
-                // Determine the modality from the response key
+                // Determine modality from the response key
                 $modality = explode('_', $responseKey)[0];
 
                 if (in_array($modality, ['reading', 'auditory'])) {
@@ -113,6 +115,8 @@ class FileController extends Controller
     /**
      * Parse the uploaded file's content into plain text.
      *
+     * This method checks the MIME type. For PDFs, it uses the PDF parser to extract text.
+     *
      * @param string $filePath
      * @return string
      */
@@ -125,7 +129,7 @@ class FileController extends Controller
             return Storage::disk('public')->get($filePath);
         }
 
-        // If the file is a PDF, extract text using a PDF parser
+        // If the file is a PDF, extract text using the PDF parser
         if ($mimeType === 'application/pdf') {
             $parser = new Parser();
             $fullPath = storage_path('app/public/' . $filePath);
