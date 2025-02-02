@@ -163,7 +163,7 @@ class FileController extends Controller
 
         Files::factory()->create([
             'owner_id' => $user->id,
-            'name' => $file->getFilename(),
+            'name' => $file->getClientOriginalName(),
             'path' => $path,
             'study_notes' => $study_notes,
             'is_ready' => true,
