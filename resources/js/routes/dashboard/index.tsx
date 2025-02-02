@@ -10,6 +10,10 @@ const DashboardPage: Component<{}> = (props) => {
 		<article class="pt-24 flex flex-row items-center justify-center">
 			<section class="w-1/2 flex flex-col gap-5">
 				<h1 class="heading-1">Welcome</h1>
+				<span class="muted">Personal Education System</span>
+				<p class="paragraph">
+					Upload your file to test your educational strength
+				</p>
 				<Button
 					variant="outline"
 					onClick={() => {

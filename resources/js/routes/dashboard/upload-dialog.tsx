@@ -32,7 +32,10 @@ const UploadDialog: Component<{}> = (props) => {
 						accept="application/pdf,application/markdown"
 					/>
 					<DialogFooter>
-						<Button type="submit">
+						<Button
+							type="submit"
+							onClick={() => document.getElementById("upload-dialog").click()}
+						>
 							<UploadCloud size={16} /> Upload
 						</Button>
 					</DialogFooter>
