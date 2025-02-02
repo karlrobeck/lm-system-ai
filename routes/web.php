@@ -39,4 +39,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/api/modality/kinesthetic/{mode}/{id}',[ModalityKinestheticController::class,'getKinestheticTest']);
     Route::get('/api/assessment/ranking',[AssessmentController::class,'ranking']);
     Route::post("/api/assessment/submit",[AssessmentController::class,'store']);
+    Route::get('/api/scores/',[ScoresController::class,'index']);
+    Route::get('/api/scores/{id}',[ScoresController::class,'show']);
+    Route::post('/api/scores/submit',[ScoresController::class,'show']);
 });

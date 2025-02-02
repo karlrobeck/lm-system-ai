@@ -2,52 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreScoresRequest;
-use App\Http\Requests\UpdateScoresRequest;
 use App\Models\Scores;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ScoresController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        return Scores::with('user')->get();
+    public function index() {
+        // show all scores
+        $user = Auth::guard('sanctum')->user();
+        return Scores::query()->with('user')->with('file')->where('user_id','=',$user->id)->get();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(StoreScoresRequest $request)
-    {
-        $request->validated();
-        return Scores::create($request->all());
+    public function show($id) {
+        $user = Auth::guard('sanctum')->user();
+        return Scores::query()->with('user')->with('file')->where('user_id','=',$user->id)->where('file_id','=',$id)->get();
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $user_id)
-    {
-        return Scores::where('user_id', $user_id)->get();
-    }
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateScoresRequest $request, Scores $scores)
-    {
-        $request->validated();
-        $scores->update($request->all());
-        return $scores;
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Scores $scores)
-    {
-        $scores->delete();
-        return $scores;
+    public function store() {
+        return "hello";
     }
 }

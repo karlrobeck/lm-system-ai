@@ -16,7 +16,7 @@ import {
 	User,
 } from "lucide-solid";
 import { createEffect, createResource, For, onMount, Show } from "solid-js";
-import { getCurrentUser, getUserById, logout } from "~/api/user";
+import { getCurrentUser, getScores, getUserById, logout } from "~/api/user";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
 import { Button } from "~/components/ui/button";
 import {
@@ -62,6 +62,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
 
 	const { setColorMode } = useColorMode();
 	const user = createAsync(() => getCurrentUser());
+	const scores = createAsync(() => getScores());
 
 	createEffect(() => {
 		if (user().has_assessment === 0) {
@@ -93,7 +94,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 							<SidebarMenuItem>
-								<SidebarMenuButton as={A} href="/dashboard">
+								<SidebarMenuButton as={A} href="/dashboard/scores">
 									<FileText size={16} />
 									<p class="truncate">Scores</p>
 								</SidebarMenuButton>

@@ -20,6 +20,7 @@ import "@fontsource/inter";
 import "../css/app.css";
 import { Progress, ProgressValueLabel } from "./components/ui/progress";
 import { lazy } from "solid-js";
+const ScoresPage = lazy(() => import("./routes/dashboard/scores"));
 
 const ConversationPage = lazy(() => import("./routes/dashboard/conversation"));
 const LoginPage = lazy(() => import("./routes/login"));
@@ -72,6 +73,7 @@ const MainClient: Component<{}> = (props) => {
 				<Route path={"conversation/:id"} component={ConversationPage} />
 				<Route path={"test/:mode/:modality/:id/"} component={TestPage} />
 				<Route path={"study/:id"} component={StudyNotesPage} />
+				<Route path={"scores"} component={ScoresPage} />
 			</Route>
 			<Route path={""} component={() => <Navigate href={"/dashboard"} />} />
 			<Route path={"login"} component={LoginPage} />

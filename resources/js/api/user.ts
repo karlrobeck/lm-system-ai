@@ -1,4 +1,5 @@
 import { action, query, redirect } from "@solidjs/router";
+import type { File } from "./file";
 
 export type User = {
     id: number;
@@ -19,6 +20,49 @@ export type User = {
         updated_at: string;
     }[];
 };
+
+export type Score = {
+    id: number;
+    correct: number;
+    total: number;
+    file_id: number;
+    user_id: number;
+    rank: number;
+    is_passed: boolean;
+    file:File;
+    user:User;
+    test_type: 'pre' | 'post';
+    modality: 'auditory' | 'reading' | 'visualization' | 'writing';
+};
+
+export const getScores = query(async() => {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch("/api/scores/", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    const payload = await response.json();
+
+    return payload as Score[];
+
+},"getScores");
+
+export const getScoresByFileId = query(async (fileId: string) => {
+    const token = localStorage.getItem("token");
+
+    const response = await fetch(`/api/scores/${fileId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    const payload = await response.json();
+
+    console.log(payload);
+
+    return payload as Score[];
+}, "getScoresByFileId");
 
 export const getUsers = async () => {
     const response = await fetch("/api/users");

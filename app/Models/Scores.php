@@ -14,4 +14,8 @@ class Scores extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function file() {
+        return $this->belongsTo(Files::class, 'file_id');
+    }
 }

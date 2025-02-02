@@ -22,11 +22,8 @@ class ScoresFactory extends Factory
         return [
             'correct' => $this->faker->numberBetween(0, 100),
             'total' => $this->faker->numberBetween(0, 100),
-            'file_id' => File::factory(),
-            'user_id' => User::factory(),
             'test_type' => $this->faker->randomElement(['pre', 'post']),
             'modality' => $this->faker->randomElement(['auditory', 'reading', 'visualization', 'writing']),
-            'scores_context_id' => ScoresContext::factory(),
             'created_at' => now(),
             'updated_at' => now(),
         ];

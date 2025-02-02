@@ -11,6 +11,7 @@ import {
 } from "solid-js";
 import { getFileMetadataById } from "~/api/file";
 import { modality } from "~/api/modality";
+import { getScores, getScoresByFileId } from "~/api/user";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -33,11 +34,13 @@ const ModalityCard = ({
 	title,
 	is_ready,
 	is_passed,
+	is_failed,
 	length,
 	link,
 }: {
 	title: string;
 	is_ready: boolean;
+	is_failed: boolean;
 	length: number;
 	link: string;
 	is_passed: boolean;
@@ -52,15 +55,22 @@ const ModalityCard = ({
 				<CardTitle>{title}</CardTitle>
 				<CardDescription>
 					<Show
-						when={is_ready}
+						when={is_ready && !is_failed}
 						fallback={
 							<div class="flex flex-row gap-2.5 items-center">
 								<Show
 									fallback={
-										<>
-											<Loader2 size={16} class="animate-spin" />
-											<span>Test is not ready</span>
-										</>
+										<Show
+											fallback={
+												<>
+													<Loader2 size={16} class="animate-spin" />
+													<span>Test is not ready</span>
+												</>
+											}
+											when={is_failed}
+										>
+											<span>Failed</span>
+										</Show>
 									}
 									when={is_passed}
 								>
@@ -87,6 +97,7 @@ const ModalityCard = ({
 
 const ConversationPage: Component<{}> = (props) => {
 	const params = useParams<{ id: string }>();
+	const scores = createAsync(() => getScoresByFileId(params.id));
 	const file = createAsync(
 		() => {
 			return getFileMetadataById(params.id);
@@ -166,7 +177,8 @@ const ConversationPage: Component<{}> = (props) => {
 							writing() !== undefined &&
 							auditory() !== undefined &&
 							kinesthetic() !== undefined &&
-							assessment() !== undefined
+							assessment() !== undefined &&
+							scores() !== undefined
 						}
 					>
 						<TabsContent value="preTest">
@@ -185,24 +197,24 @@ const ConversationPage: Component<{}> = (props) => {
 												]}
 											>
 												{(modality) => {
-													const lowestRank = assessment()
-														.filter(
-															(v) =>
-																Boolean(v.is_failed) === false ||
-																Boolean(v.pre_test_passed) === false,
-														)
-														.reduce(
-															(prev, curr) =>
-																prev.rank < curr.rank ? prev : curr,
-															{ rank: Number.POSITIVE_INFINITY },
-														);
 													return (
 														<Show when={a.modality === modality}>
 															<ModalityCard
-																is_passed={Boolean(a.pre_test_passed)}
+																is_failed={Boolean(a.is_failed) === true}
+																is_passed={
+																	scores().filter(
+																		(v) =>
+																			a.modality === v.modality &&
+																			(Boolean(a.is_failed) === false ||
+																				Boolean(v.is_passed) === true),
+																	).length === 1
+																}
 																is_ready={
-																	lowestRank.rank === a.rank &&
-																	Boolean(a.pre_test_passed) === true
+																	scores().filter(
+																		(v) =>
+																			a.rank === 1 &&
+																			Boolean(v.is_passed) !== true,
+																	).length === 1
 																}
 																title={
 																	modality.charAt(0).toUpperCase() +

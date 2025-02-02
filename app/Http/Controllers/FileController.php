@@ -23,6 +23,8 @@ class FileController extends Controller
             'file' => 'required',
         ]);
         
+        $user = Auth::guard('sanctum')->user();
+
         $file = $request->file('file');
         $path = $file->store('uploads', 'public');
 
@@ -157,8 +159,17 @@ class FileController extends Controller
             'test_type'      => $visualization_post_test_response['test_type'],
         ]);*/
 
+        $study_notes = "implement me";
+
+        Files::factory()->create([
+            'owner_id' => $user->id,
+            'name' => $file->getFilename(),
+            'path' => $path,
+            'study_notes' => $study_notes,
+            'is_ready' => true,
+        ]);
+
         return response()->json(['message' => 'File uploaded and tests generated successfully.']);
-        
     }
 
     public function getFile($id) {

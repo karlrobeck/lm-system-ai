@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             FileSeeder::class,
             ModalitySeeder::class,
+            TestTrackingSeeder::class
         ]);
     }
 }

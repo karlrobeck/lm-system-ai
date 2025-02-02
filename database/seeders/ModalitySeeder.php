@@ -31,7 +31,6 @@ class ModalitySeeder extends Seeder
             'user_id' => $user->id,
             'file_id' => $db_file->id,
             'rank' => 1,
-            'is_failed' => true,
             'modality' => 'reading',
             'message' => 'Reading is ranked highest based on your assessment because it is your strongest modality.',
         ]);
@@ -41,7 +40,6 @@ class ModalitySeeder extends Seeder
             'file_id' => $db_file->id,
             'rank' => 2,
             'modality' => 'writing',
-            'is_failed' => true,
             'message' => 'Writing is ranked second based on your assessment because it is a strong modality for you.',
         ]);
 
@@ -49,7 +47,6 @@ class ModalitySeeder extends Seeder
             'user_id' => $user->id,
             'file_id' => $db_file->id,
             'rank' => 3,
-            'pre_test_passed' => true,
             'modality' => 'auditory',
             'message' => 'Auditory is ranked third based on your assessment because it is a moderate modality for you.',
         ]);

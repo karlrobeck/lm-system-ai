@@ -19,8 +19,6 @@ return new class extends Migration
             $table->foreign('file_id')->references('id')->on('files')->onDelete('cascade');
             $table->integer('rank');
             $table->boolean('is_failed')->default(false);
-            $table->boolean('pre_test_passed')->default(false);
-            $table->boolean('post_test_passed')->default(false);
             $table->enum('modality', ['reading', 'writing', 'auditory', 'kinesthetic','visualization']);
             $table->string('message');
             $table->timestamps();

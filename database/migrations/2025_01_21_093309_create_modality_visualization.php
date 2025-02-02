@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('file_id');
             $table->foreign('file_id')->references('id')->on('files');
-            $table->string('question');
-            $table->string('image_link');
+            $table->text('question');
+            $table->text('image_link');
             $table->json('choices');
             $table->integer('question_index');
-            $table->string('correct_answer');
+            $table->text('correct_answer');
             $table->enum('test_type',['pre','post']);
             $table->timestamps();
         });
