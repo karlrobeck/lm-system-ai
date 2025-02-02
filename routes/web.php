@@ -9,6 +9,7 @@ use App\Http\Controllers\ScoresController;
 use App\Http\Middleware\JwtMiddleware;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\ModalityKinestheticController;
 use App\Http\Controllers\ModalityReadingController;
 use App\Http\Controllers\ModalityWritingController;
@@ -36,4 +37,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/api/modality/writing/{mode}/{id}',[ModalityWritingController::class,'getWritingTest']);
     Route::get('/api/modality/auditory/{mode}/{id}',[ModalityAuditoryController::class,'getAuditoryTest']);
     Route::get('/api/modality/kinesthetic/{mode}/{id}',[ModalityKinestheticController::class,'getKinestheticTest']);
+    Route::post("/api/assessment/submit",[AssessmentController::class,'store']);
 });

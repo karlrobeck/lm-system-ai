@@ -67,10 +67,7 @@ const MainClient: Component<{}> = (props) => {
 			<Route path={"/dashboard"} component={DashboardLayout}>
 				<Route path={""} component={DashboardPage} />
 				<Route path={"conversation/:id"} component={ConversationPage} />
-				<Route
-					path={"test/:mode/:modality/:id/:readingWritingType?"}
-					component={TestPage}
-				/>
+				<Route path={"test/:mode/:modality/:id/"} component={TestPage} />
 			</Route>
 			<Route path={""} component={() => <Navigate href={"/dashboard"} />} />
 			<Route path={"login"} component={LoginPage} />
