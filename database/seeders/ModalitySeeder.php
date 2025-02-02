@@ -58,15 +58,49 @@ class ModalitySeeder extends Seeder
             'modality' => 'kinesthetic',
             'message' => 'Kinesthetic is ranked fourth based on your assessment because it is a less strong modality for you.',
         ]);
-
+        // Create an Assessment for visualization modality
         Assessment::factory()->create([
-            'user_id' => $user->id,
-            'file_id' => $db_file->id,
-            'rank' => 5,
+            'user_id'  => $user->id,
+            'file_id'  => $db_file->id,
+            'rank'     => 5,
             'modality' => 'visualization',
-            'message' => 'Visualization is ranked fifth based on your assessment because it is your weakest modality.',
+            'message'  => 'Visualization is ranked fifth based on your assessment because it is your weakest modality.',
         ]);
-        
+
+        // Define test types and number of questions
+        $testTypes = ['pre', 'post'];
+        $numberOfQuestions = 3; // Adjust as needed
+
+        // Define a mapping from response keys to model classes
+        $responseToModelMap = [
+            'visualization_pre_test' => 'pre',
+            'visualization_post_test'=> 'post',
+        ];
+
+        foreach ($testTypes as $testType) {
+            for ($i = 1; $i <= $numberOfQuestions; $i++) {
+                // Generate the test data using the factory
+                $modalityVisualization = ModalityVisualization::factory()->create([
+                    'question_index' => $i,
+                    'file_id'        => $db_file->id,
+                    'test_type'      => $testType,
+                    'question'       => "Visualization {$testType} test question {$i}",
+                    'choices'        => json_encode([
+                        "Option A for question {$i}",
+                        "Option B for question {$i}",
+                        "Option C for question {$i}",
+                        "Option D for question {$i}",
+                    ]),
+                    'correct_answer' => "Option B for question {$i}",
+                    'image_prompt'   => "An image depicting scene {$i} for visualization {$testType} test.",
+                    // 'image_url' remains null
+                ]);
+
+                // Optionally, log the creation
+                $this->command->info("Created Visualization {$testType} Test Question {$i}");
+            }
+
+        }
         for ($i = 1; $i <= 10; $i++) {
 
             $test_type = $i > 5 ? 'post' : 'pre';

@@ -3,198 +3,175 @@
 namespace App\Http\Controllers;
 
 use App\Models\Files;
+use App\Models\VisualizationPreTest;
+use App\Models\VisualizationPostTest;
+use App\Services\QuizService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use App\Services\QuizService; // Import the QuizService
+use Smalot\PdfParser\Parser; // Make sure you've installed smalot/pdfparser via Composer
 
 class FileController extends Controller
 {
-    private $quizService;
-
-    // Inject the QuizService via the controller's constructor
-    // public function __construct(QuizService $quizService){
-        // $this->quizService = $quizService;
-    // }
-    public function uploadFile(Request $request) {
-
+    public function uploadFile(Request $request)
+    {
         $request->validate([
-            'file' => 'required',
+            'file' => 'required|file',
         ]);
-        
-        $user = Auth::guard('sanctum')->user();
+
+        // Instantiate QuizService (which now uses ChatGPT internally)
+        $quizService = new QuizService();
 
         $file = $request->file('file');
         $path = $file->store('uploads', 'public');
 
-        // Read the content of the file
-        $content = Storage::disk('public')->get($path);
+        // Parse file content (plain text or PDF)
+        $content = $this->parseFileContent($path);
 
-        /*
+        // Create a custom prompt for ChatGPT
+        $prompt = "Using ChatGPT, generate a concise summary and key study notes, then create test questions based on the following text:\n\n" . $content;
         
-        // Generate pre-test and post-test for each modality
-        $reading_pre_test_response = $this->quizService->create_reading_modality($content, 'pre');
-        $reading_post_test_response = $this->quizService->create_reading_modality($content, 'post');
+        // Generate study notes via ChatGPT
+        $studyNotes = $quizService->generateStudyNotes($prompt);
+        
+        // Generate test responses for each modality and test type using the same prompt
+        $modalities = ['reading', 'writing', 'auditory', 'kinesthetic', 'visualization'];
+        $testTypes = ['pre', 'post'];
+        $allResponses = [];
 
-        $writing_pre_test_response = $this->quizService->create_writing_modality($content, 'pre');
-        $writing_post_test_response = $this->quizService->create_writing_modality($content, 'post');
+        foreach ($modalities as $modality) {
+            foreach ($testTypes as $test_type) {
+                $method = "create_{$modality}_modality";
+                if (method_exists($quizService, $method)) {
+                    $response = $quizService->$method($prompt, $test_type);
+                    if ($response === null) {
+                        return response()->json([
+                            'error' => "Failed to generate {$modality} {$test_type}-test."
+                        ], 500);
+                    }
+                    $allResponses["{$modality}_{$test_type}_test"] = $response;
+                } else {
+                    Log::warning("Method {$method} does not exist in QuizService.");
+                }
+            }
+        }
 
-        $auditory_pre_test_response = $this->quizService->create_auditory_modality($content, 'pre');
-        $auditory_post_test_response = $this->quizService->create_auditory_modality($content, 'post');
-
-        $kinesthetic_pre_test_response = $this->quizService->create_kinesthetic_modality($content, 'pre');
-        $kinesthetic_post_test_response = $this->quizService->create_kinesthetic_modality($content, 'post');
-
-        // Visualization modality
-        $visualization_pre_test_response = $this->quizService->create_visualization_modality($content, 'pre');
-        $visualization_post_test_response = $this->quizService->create_visualization_modality($content, 'post');
-
-         // Check if the responses are not null
-         if ($visualization_pre_test_response === null || $visualization_post_test_response === null) {
-             return response()->json(['error' => 'Failed to generate visualization test responses.'], 500);
-         }
-        // Save the file metadata in the database
+        // Save the file metadata along with the generated study notes in the database
         $metadata = Files::create([
-            'name'     => $file->getClientOriginalName(),
-            'path'     => $path,
-            'is_ready' => true,
-            'type'     => $file->getClientMimeType(),
-            'owner_id' => $request->user()->id,
+            'name'         => $file->getClientOriginalName(),
+            'path'         => $path,
+            'study_notes'  => $studyNotes, // Generated study notes from ChatGPT
+            'is_ready'     => true,
+            'type'         => $file->getClientMimeType(),
+            'owner_id'     => $request->user()->id,
         ]);
 
-        // Save the pre-test and post-test responses
-        // Reading Modality
-        ReadingPreTest::create([
-            'file_id'        => $metadata->id,
-            'question_index' => $reading_pre_test_response['question_index'],
-            'question'       => $reading_pre_test_response['question'],
-            'choices'        => json_encode($reading_pre_test_response['choices']),
-            'answer'         => $reading_pre_test_response['correct_answer'],
-            'test_type'      => $reading_pre_test_response['test_type'],
-        ]);
+        // Map response keys to model classes (example: visualization tests)
+        $responseToModelMap = [
+            'visualization_pre_test'  => VisualizationPreTest::class,
+            'visualization_post_test' => VisualizationPostTest::class,
+        ];
 
-        ReadingPostTest::create([
-            'file_id'        => $metadata->id,
-            'question_index' => $reading_post_test_response['question_index'],
-            'question'       => $reading_post_test_response['question'],
-            'choices'        => json_encode($reading_post_test_response['choices']),
-            'answer'         => $reading_post_test_response['correct_answer'],
-            'test_type'      => $reading_post_test_response['test_type'],
-        ]);
+        // Loop through all responses and save them accordingly
+        foreach ($allResponses as $responseKey => $responseData) {
+            if (isset($responseToModelMap[$responseKey])) {
+                $model = $responseToModelMap[$responseKey];
+                $data = [
+                    'file_id'        => $metadata->id,
+                    'question_index' => $responseData['question_index'] ?? null,
+                    'question'       => $responseData['question'] ?? null,
+                    'test_type'      => $responseData['test_type'] ?? null,
+                ];
 
-        // Writing Modality
-        WritingPreTest::create([
-            'file_id'        => $metadata->id,
-            'question_index' => $writing_pre_test_response['question_index'],
-            'question'       => $writing_pre_test_response['question'],
-            'answer'         => $writing_pre_test_response['correct_answer'],
-            'test_type'      => $writing_pre_test_response['test_type'],
-        ]);
+                // Determine the modality from the response key
+                $modality = explode('_', $responseKey)[0];
 
-        WritingPostTest::create([
-            'file_id'        => $metadata->id,
-            'question_index' => $writing_post_test_response['question_index'],
-            'question'       => $writing_post_test_response['question'],
-            'answer'         => $writing_post_test_response['correct_answer'],
-            'test_type'      => $writing_post_test_response['test_type'],
-        ]);
+                if (in_array($modality, ['reading', 'auditory'])) {
+                    $data['choices']        = isset($responseData['choices']) ? json_encode($responseData['choices']) : null;
+                    $data['correct_answer'] = $responseData['correct_answer'] ?? null;
+                }
 
-        // Auditory Modality
-        AuditoryPreTest::create([
-            'file_id'        => $metadata->id,
-            'question_index' => $auditory_pre_test_response['question_index'],
-            'question'       => $auditory_pre_test_response['question'],
-            'choices'        => json_encode($auditory_pre_test_response['choices']),
-            'answer'         => $auditory_pre_test_response['correct_answer'],
-            'test_type'      => $auditory_pre_test_response['test_type'],
-        ]);
+                if (in_array($modality, ['writing', 'kinesthetic'])) {
+                    $data['answer'] = $responseData['context_answer'] ?? null;
+                }
 
-        AuditoryPostTest::create([
-            'file_id'        => $metadata->id,
-            'question_index' => $auditory_post_test_response['question_index'],
-            'question'       => $auditory_post_test_response['question'],
-            'choices'        => json_encode($auditory_post_test_response['choices']),
-            'answer'         => $auditory_post_test_response['correct_answer'],
-            'test_type'      => $auditory_post_test_response['test_type'],
-        ]);
+                if ($modality === 'visualization') {
+                    $data['image_prompt'] = $responseData['image_prompt'] ?? null;
+                    $data['image_url']    = $responseData['image_url'] ?? null;
+                }
 
-        // Kinesthetic Modality
-        KinestheticPreTest::create([
-            'file_id'        => $metadata->id,
-            'question_index' => $kinesthetic_pre_test_response['question_index'],
-            'question'       => $kinesthetic_pre_test_response['question'],
-            'answer'         => $kinesthetic_pre_test_response['correct_answer'],
-            'test_type'      => $kinesthetic_pre_test_response['test_type'],
-        ]);
+                $model::create($data);
+            } else {
+                Log::warning("No model mapped for response key: {$responseKey}");
+            }
+        }
 
-        KinestheticPostTest::create([
-            'file_id'        => $metadata->id,
-            'question_index' => $kinesthetic_post_test_response['question_index'],
-            'question'       => $kinesthetic_post_test_response['question'],
-            'answer'         => $kinesthetic_post_test_response['correct_answer'],
-            'test_type'      => $kinesthetic_post_test_response['test_type'],
-        ]);
-
-        // Visualization Modality
-        VisualizationPreTest::create([
-            'file_id'        => $metadata->id,
-            'question_index' => $visualization_pre_test_response['question_index'],
-            'question'       => $visualization_pre_test_response['question'],
-            'choices'        => json_encode($visualization_pre_test_response['choices']),
-            'answer'         => $visualization_pre_test_response['correct_answer'],
-            'image_prompt'   => $visualization_pre_test_response['image_prompt'],
-            'image_url'      => $visualization_pre_test_response['image_url'],
-            'test_type'      => $visualization_pre_test_response['test_type'],
-        ]);
-
-        VisualizationPostTest::create([
-            'file_id'        => $metadata->id,
-            'question_index' => $visualization_post_test_response['question_index'],
-            'question'       => $visualization_post_test_response['question'],
-            'choices'        => json_encode($visualization_post_test_response['choices']),
-            'answer'         => $visualization_post_test_response['correct_answer'],
-            'image_prompt'   => $visualization_post_test_response['image_prompt'],
-            'image_url'      => $visualization_post_test_response['image_url'],
-            'test_type'      => $visualization_post_test_response['test_type'],
-        ]);*/
-
-        $study_notes = "implement me";
-
-        Files::factory()->create([
-            'owner_id' => $user->id,
-            'name' => $file->getClientOriginalName(),
-            'path' => $path,
-            'study_notes' => $study_notes,
-            'is_ready' => true,
-        ]);
-
-        return response()->json(['message' => 'File uploaded and tests generated successfully.']);
+        return response()->json(['message' => 'File uploaded and tests generated successfully.'], 201);
     }
 
-    public function getFile($id) {
+    /**
+     * Parse the uploaded file's content into plain text.
+     *
+     * @param string $filePath
+     * @return string
+     */
+    private function parseFileContent($filePath)
+    {
+        $mimeType = Storage::disk('public')->mimeType($filePath);
+
+        // If the file is plain text, return its content directly
+        if (strpos($mimeType, 'text') !== false) {
+            return Storage::disk('public')->get($filePath);
+        }
+
+        // If the file is a PDF, extract text using a PDF parser
+        if ($mimeType === 'application/pdf') {
+            $parser = new Parser();
+            $fullPath = storage_path('app/public/' . $filePath);
+            $pdf = $parser->parseFile($fullPath);
+            return $pdf->getText();
+        }
+
+        // For other file types, attempt to return the content as a string
+        return (string) Storage::disk('public')->get($filePath);
+    }
+
+    public function getFile($id)
+    {
         $user = Auth::guard('sanctum')->user();
-        $file = Files::query()->where('id','=',$id)->where('owner_id','=',$user->id)->first();
-        if ($file->ready) {
-            return Storage::get($file->path);
+        $file = Files::query()
+            ->where('id', '=', $id)
+            ->where('owner_id', '=', $user->id)
+            ->first();
+
+        if ($file && $file->is_ready) {
+            return Storage::disk('public')->get($file->path);
         } else {
-            // this is where you call gpt to ask if the file is ready
             return response()->json(['error' => 'File not ready'], 400);
         }
     }
 
-    public function getAllFileMetadata($request) {
+    public function getAllFileMetadata(Request $request)
+    {
         $user = Auth::guard('sanctum')->user();
-        return Files::query()->where('owner_id','=',$user->id)->get();
+        return Files::query()->where('owner_id', '=', $user->id)->get();
     }
 
-    public function getFileMetadata(Request $request) {
+    public function getFileMetadata(Request $request)
+    {
         $user = Auth::guard('sanctum')->user();
         $id = (int)$request->route('id');
-        $file = Files::query()->where('id', '=', $id)->where('owner_id', '=', $user->id)->with('user')->first();
-        if($file == null) {
+        $file = Files::query()
+            ->where('id', '=', $id)
+            ->where('owner_id', '=', $user->id)
+            ->with('user')
+            ->first();
+
+        if ($file === null) {
             return response()->json(['error' => 'File not found'], 404);
         }
+
         return $file;
     }
 }

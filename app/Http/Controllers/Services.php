@@ -88,7 +88,10 @@ class QuizService
         ];
 
         $system_prompt = $system_prompts[$modality];
-
+        if (empty($system_prompt)) {
+            Log::error("No system prompt defined for modality: {$modality}");
+            return null;
+        }
         $messages = [
             ['role' => 'system', 'content' => $system_prompt],
             ['role' => 'user', 'content' => $content]
@@ -155,7 +158,7 @@ class QuizService
             ]);
             return null;
         }
-    }
+    } 
 
     private function generateImage($image_prompt)
     {
