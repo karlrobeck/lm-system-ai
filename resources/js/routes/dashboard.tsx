@@ -73,7 +73,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
 		<SidebarProvider>
 			<Sidebar class="bg-background">
 				<SidebarHeader class="border-b">
-					<h4 class="heading-4">App Title</h4>
+					<h4 class="heading-4">P.E.S</h4>
 				</SidebarHeader>
 				<SidebarContent>
 					<SidebarGroup>
@@ -228,7 +228,7 @@ const DashboardLayout = (props: RouteSectionProps) => {
 				</header>
 				<ProfileDialog />
 				<AssessmentFormDialog />
-				<div class="p-4">{props.children}</div>
+				<div class="p-4 h-screen">{props.children}</div>
 			</main>
 		</SidebarProvider>
 	);

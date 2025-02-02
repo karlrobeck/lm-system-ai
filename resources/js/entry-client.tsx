@@ -18,11 +18,14 @@ import {
 
 import "@fontsource/inter";
 import "../css/app.css";
-import ConversationPage from "./routes/dashboard/conversation";
-import LoginPage from "./routes/login";
-import RegisterPage from "./routes/register";
 import { Progress, ProgressValueLabel } from "./components/ui/progress";
-import TestPage from "./routes/dashboard/conversation/test";
+import { lazy } from "solid-js";
+
+const ConversationPage = lazy(() => import("./routes/dashboard/conversation"));
+const LoginPage = lazy(() => import("./routes/login"));
+const RegisterPage = lazy(() => import("./routes/register"));
+const TestPage = lazy(() => import("./routes/dashboard/conversation/test"));
+const StudyNotesPage = lazy(() => import("./routes/dashboard/study-notes"));
 
 const MainClient: Component<{}> = (props) => {
 	const storageManager = createLocalStorageManager("vite-ui-theme");
@@ -68,6 +71,7 @@ const MainClient: Component<{}> = (props) => {
 				<Route path={""} component={DashboardPage} />
 				<Route path={"conversation/:id"} component={ConversationPage} />
 				<Route path={"test/:mode/:modality/:id/"} component={TestPage} />
+				<Route path={"study/:id"} component={StudyNotesPage} />
 			</Route>
 			<Route path={""} component={() => <Navigate href={"/dashboard"} />} />
 			<Route path={"login"} component={LoginPage} />
