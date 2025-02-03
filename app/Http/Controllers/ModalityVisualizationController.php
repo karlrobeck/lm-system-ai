@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Files;
+use App\Models\ModalityVisualization;
 use App\Models\VisualizationPreTest;
 use App\Models\VisualizationPostTest;
 use Illuminate\Http\Request;
@@ -23,26 +24,14 @@ class ModalityVisualizationController extends Controller
         // Authenticate user
         $user = Auth::guard('sanctum')->user();
 
-        // Verify file ownership
         $file = Files::where('id', $id)->where('owner_id', $user->id)->first();
         
         if (!$file) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        // Fetch visualization test based on mode
-        if ($mode === 'pre') {
-            $modality = VisualizationPreTest::where('test_type', $mode)
+        return ModalityVisualization::where('test_type', $mode)
                 ->where('file_id', $id)
-                ->get();
-        } elseif ($mode === 'post') {
-            $modality = VisualizationPostTest::where('test_type', $mode)
-                ->where('file_id', $id)
-                ->get();
-        } else {
-            return response()->json(['error' => 'Invalid test type'], 400);
-        }
-        
-        return response()->json($modality);
+                ->get();;
     }
 }

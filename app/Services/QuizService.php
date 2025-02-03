@@ -82,7 +82,7 @@ class QuizService
             'visualization' => "You are an expert at creating visualization-based questions. "
                 . "Based on the following content, generate a {$test_type}-test question with the following fields:\n"
                 . "- question_index (integer)\n"
-                . "- image_prompt (string, suitable for generating an image with DALL-E)\n"
+                . "- image_prompt (string, suitable for generating an image with DALL-E) maximum of 600 tokens\n"
                 . "- choices (list of strings with a maximum of 4 choices)\n"
                 . "- correct_answer (string)\n"
                 . "- question (string)\n"
