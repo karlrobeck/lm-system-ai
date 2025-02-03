@@ -20,6 +20,8 @@ import "@fontsource/inter";
 import "../css/app.css";
 import { Progress, ProgressValueLabel } from "./components/ui/progress";
 import { lazy } from "solid-js";
+import { Toaster } from "~/components/ui/toast";
+
 const ScoresPage = lazy(() => import("./routes/dashboard/scores"));
 
 const ConversationPage = lazy(() => import("./routes/dashboard/conversation"));
@@ -62,6 +64,7 @@ const MainClient: Component<{}> = (props) => {
 									/>
 								</Show>
 								{props.children}
+								<Toaster />
 							</Suspense>
 						</ColorModeProvider>
 					</>

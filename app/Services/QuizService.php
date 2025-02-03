@@ -53,10 +53,10 @@ class QuizService
                 . "Based on the following content, generate a {$test_type}-test question with the following fields:\n"
                 . "{\n"
                 . "  \"question_index\": 1,\n"
-                . "  \"correct_answer\": \"string\",\n"
-                . "  \"choices\": [\"string1\", \"string2\", \"string3\", \"string4\"],\n"
+                . "  \"correct_answer\": \"the correct answer\",\n"
+                . "  \"choices\": \"choices based on the file\",\n"
                 . "  \"question\": \"string\",\n"
-                . "  \"test_type\": \"pre or post\"\n"
+                . "  \"test_type\": \"<pre or post>\"\n"
                 . "}\n"
                 . "Provide the response in JSON format. you are not allowed to send any markdown. use only JSON format.",
             'writing' => "You are an expert at creating writing prompts. "
@@ -118,7 +118,7 @@ class QuizService
             'Authorization' => 'Bearer ' . $this->apiKey
         ];
         $data = [
-            'model'    => 'gpt-3.5-turbo',
+            'model'    => 'gpt-4o',
             'messages' => $messages
         ];
 
@@ -183,7 +183,7 @@ class QuizService
             'Authorization' => 'Bearer ' . $this->apiKey
         ];
         $data = [
-            'model'    => 'gpt-3.5-turbo',
+            'model'    => 'gpt-4o',
             'messages' => [
                 ['role' => 'system', 'content' => "You are an expert at analyzing learning styles. Based on the following content, generate an assessment for the user with the following fields:\n- rank (integer)\n- name (string, must be one of the following: reading, writing, auditory, kinesthetic, visualization)\n- message (string)\nProvide the response in JSON format. you are not allowed to send any markdown. use only JSON format.\n"],
                 ['role' => 'user', 'content' => $user_prompt]
@@ -219,7 +219,7 @@ class QuizService
             'Authorization' => 'Bearer ' . $this->apiKey
         ];
         $data = [
-            'model'    => 'gpt-3.5-turbo',
+            'model'    => 'gpt-4o',
             'messages' => [
                 ['role' => 'system', 'content' => "You are an expert at creating study notes. only return markdown format\n"],
                 ['role' => 'user', 'content' => $user_prompt]

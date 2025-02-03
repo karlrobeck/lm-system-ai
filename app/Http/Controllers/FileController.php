@@ -154,17 +154,17 @@ class FileController extends Controller
     private function parseFileContent($filePath)
     {
         $mimeType = Storage::disk('public')->mimeType($filePath);
-
         // If the file is plain text, return its content directly
         if (strpos($mimeType, 'text') !== false) {
             return Storage::disk('public')->get($filePath);
         }
-
+        
         // If the file is a PDF, extract text using the PDF parser
         if ($mimeType === 'application/pdf') {
             $parser = new Parser();
             $fullPath = storage_path('app/public/' . $filePath);
             $pdf = $parser->parseFile($fullPath);
+            error_log($pdf->getText());
             return $pdf->getText();
         }
 

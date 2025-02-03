@@ -1,6 +1,7 @@
 import { action, query, reload, revalidate } from "@solidjs/router";
 import type { User } from "./user";
 import { modality } from "./modality";
+import { showToast } from "~/components/ui/toast"
 
 export type File = {
     id: string;
@@ -42,6 +43,17 @@ export const uploadFile = action(async (formData: FormData) => {
         },
         body: formData,
     });
+    if(response.ok) {
+        showToast({
+            title: "File uploaded",
+            description: "The file has been uploaded successfully",
+        });
+    } else {
+        showToast({
+            title: "File upload failed",
+            description: "There was an error uploading the file",
+        });
+    }
     console.log(await response.text());
     revalidate("getCurrentUser");
 })
