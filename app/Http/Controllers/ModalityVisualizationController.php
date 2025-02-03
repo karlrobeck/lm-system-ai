@@ -29,9 +29,8 @@ class ModalityVisualizationController extends Controller
         if (!$file) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
         return ModalityVisualization::where('test_type', $mode)
                 ->where('file_id', $id)
-                ->get();;
+                ->get();
     }
 }

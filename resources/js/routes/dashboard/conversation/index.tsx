@@ -44,16 +44,12 @@ const ModalityCard = ({
 	is_passed: boolean;
 }) => {
 	return (
-		<Card
-			classList={{
-				"opacity-50": is_ready === false,
-			}}
-		>
+		<Card>
 			<CardHeader>
 				<CardTitle>{title}</CardTitle>
 				<CardDescription>
 					<Show
-						when={is_ready}
+						when={true}
 						fallback={
 							<div class="flex flex-row gap-2.5 items-center">
 								<Show fallback={<span>Test Unavaiable</span>} when={is_passed}>
@@ -67,7 +63,7 @@ const ModalityCard = ({
 					</Show>
 				</CardDescription>
 			</CardHeader>
-			<Show when={is_ready}>
+			<Show when={true}>
 				<CardFooter>
 					<Button as={A} href={link}>
 						Start test

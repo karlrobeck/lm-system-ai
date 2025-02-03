@@ -19,7 +19,7 @@ return new class extends Migration
             $table->text('image_url')->nullable();
             $table->text('image_prompt')->nullable();
             $table->json('choices');
-            $table->integer('question_index');
+            $table->integer('question_index')->nullable();
             $table->text('correct_answer');
             $table->enum('test_type',['pre','post']);
             $table->timestamps();

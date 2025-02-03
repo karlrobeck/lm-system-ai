@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreign('file_id')->references('id')->on('files');
             $table->text('question');
             $table->text('context_answer');
-            $table->text('question_index');
+            $table->integer('question_index')->nullable();
             $table->enum('test_type',['pre','post']);
             $table->timestamps();
         });
