@@ -138,130 +138,100 @@ const ConversationPage: Component<{}> = (props) => {
 						<TabsTrigger value="preTest">Pre</TabsTrigger>
 						<TabsTrigger value="postTest">Post</TabsTrigger>
 					</TabsList>
-					<Show
-						when={
-							file() !== undefined
-						}
-					>
-						<TabsContent value="preTest">
-							<div class="grid grid-cols-3 gap-2.5">
-								<For each={assessment()}>
-									{(a) => {
-										// get the highest rank that is not failed
-										return (
-											<For
-												each={[
-													"reading",
-													"writing",
-													"auditory",
-													"visualization",
-													"kinesthetic",
-												]}
-											>
-												{(modality) => {
-													return (
-														<Show when={a.modality === modality}>
-															<ModalityCard
-																is_passed={true}
-																is_ready={
-																	{
-																		reading: reading,
-																		writing: writing,
-																		auditory: auditory,
-																		visualization: visualization,
-																		kinesthetic: kinesthetic,
-																	}
-																		[modality]()
-																		?.filter((v) => v.test_type === "pre")
-																		?.length >= 1
-																}
-																title={
-																	modality.charAt(0).toUpperCase() +
-																	modality.slice(1)
-																}
-																length={
-																	{
-																		reading: reading,
-																		writing: writing,
-																		auditory: auditory,
-																		visualization: visualization,
-																		kinesthetic: kinesthetic,
-																	}
-																		[modality]()
-																		?.filter((v) => v.test_type === "pre")
-																		?.length || 0
-																}
-																link={`/dashboard/test/pre/${modality}/${params.id}`}
-															/>
-														</Show>
-													);
-												}}
-											</For>
-										);
-									}}
-								</For>
-							</div>
-						</TabsContent>
-						<TabsContent value="postTest">
-							<div class="grid grid-cols-3 gap-2.5">
-								<For each={assessment()}>
-									{(a) => {
-										// get the highest rank that is not failed
-										return (
-											<For
-												each={[
-													"reading",
-													"writing",
-													"auditory",
-													"visualization",
-													"kinesthetic",
-												]}
-											>
-												{(modality) => {
-													return (
-														<Show when={a.modality === modality}>
-															<ModalityCard
-																is_passed={true}
-																is_ready={
-																	{
-																		reading: reading,
-																		writing: writing,
-																		auditory: auditory,
-																		visualization: visualization,
-																		kinesthetic: kinesthetic,
-																	}
-																		[modality]()
-																		?.filter((v) => v.test_type === "post")
-																		?.length >= 1
-																}
-																title={
-																	modality.charAt(0).toUpperCase() +
-																	modality.slice(1)
-																}
-																length={
-																	{
-																		reading: reading,
-																		writing: writing,
-																		auditory: auditory,
-																		visualization: visualization,
-																		kinesthetic: kinesthetic,
-																	}
-																		[modality]()
-																		?.filter((v) => v.test_type === "post")
-																		?.length || 0
-																}
-																link={`/dashboard/test/post/${modality}/${params.id}`}
-															/>
-														</Show>
-													);
-												}}
-											</For>
-										);
-									}}
-								</For>
-							</div>
-						</TabsContent>
-					</Show>
+					<TabsContent value="preTest">
+						<div class="grid grid-cols-3 gap-2.5">
+							<For
+								each={[
+									"reading",
+									"writing",
+									"auditory",
+									"visualization",
+									"kinesthetic",
+								]}
+							>
+								{(modality) => {
+									return (
+										<ModalityCard
+											is_passed={true}
+											is_ready={
+												{
+													reading: reading,
+													writing: writing,
+													auditory: auditory,
+													visualization: visualization,
+													kinesthetic: kinesthetic,
+												}
+													[modality]()
+													?.filter((v) => v.test_type === "pre")?.length >= 1
+											}
+											title={
+												modality.charAt(0).toUpperCase() + modality.slice(1)
+											}
+											length={
+												{
+													reading: reading,
+													writing: writing,
+													auditory: auditory,
+													visualization: visualization,
+													kinesthetic: kinesthetic,
+												}
+													[modality]()
+													?.filter((v) => v.test_type === "pre")?.length || 0
+											}
+											link={`/dashboard/test/pre/${modality}/${params.id}`}
+										/>
+									);
+								}}
+							</For>
+						</div>
+					</TabsContent>
+					<TabsContent value="postTest">
+						<div class="grid grid-cols-3 gap-2.5">
+							<For
+								each={[
+									"reading",
+									"writing",
+									"auditory",
+									"visualization",
+									"kinesthetic",
+								]}
+							>
+								{(modality) => {
+									return (
+										<ModalityCard
+											is_passed={true}
+											is_ready={
+												{
+													reading: reading,
+													writing: writing,
+													auditory: auditory,
+													visualization: visualization,
+													kinesthetic: kinesthetic,
+												}
+													[modality]()
+													?.filter((v) => v.test_type === "post")?.length >= 1
+											}
+											title={
+												modality.charAt(0).toUpperCase() + modality.slice(1)
+											}
+											length={
+												{
+													reading: reading,
+													writing: writing,
+													auditory: auditory,
+													visualization: visualization,
+													kinesthetic: kinesthetic,
+												}
+													[modality]()
+													?.filter((v) => v.test_type === "post")?.length || 0
+											}
+											link={`/dashboard/test/post/${modality}/${params.id}`}
+										/>
+									);
+								}}
+							</For>
+						</div>
+					</TabsContent>
 				</Tabs>
 			</Suspense>
 		</article>
