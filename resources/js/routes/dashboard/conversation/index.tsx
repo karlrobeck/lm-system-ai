@@ -140,7 +140,8 @@ const ConversationPage: Component<{}> = (props) => {
 					</TabsList>
 					<Show
 						when={
-							(file() !== undefined && reading() !== undefined) ||
+							file() !== undefined ||
+							reading() !== undefined ||
 							writing() !== undefined ||
 							auditory() !== undefined ||
 							kinesthetic() !== undefined ||
