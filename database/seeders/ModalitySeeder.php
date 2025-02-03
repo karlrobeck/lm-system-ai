@@ -82,6 +82,7 @@ class ModalitySeeder extends Seeder
             ModalityVisualization::factory()->create([
                 'question_index' => $i,
                 'file_id' => $db_file->id,
+                'image_url' => 'https://fakeimg.pl/1920x1080/',
                 'test_type' => $test_type,
             ]);
             ModalityAuditory::factory()->create([

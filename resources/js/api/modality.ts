@@ -6,9 +6,9 @@ export type Visualization = {
     test_type: "pre" | "post";
     image_file: File;
     question: string;
+    question_index: number;
+    image_url: string;
     choices: string; // JSON stringified array
-    correct_answer: string;
-    context_file: File;
     created_at: string;
     updated_at: string;
 };
@@ -102,6 +102,8 @@ export const modality = {
 
             const preTest = await preTestResponse.json() as Visualization[];
             const postTest = await postTestResponse.json() as Visualization[];
+
+            console.log(preTest, postTest);
 
             return [...preTest, ...postTest] as Visualization[];
         }, "visualizationListByContextFile"),

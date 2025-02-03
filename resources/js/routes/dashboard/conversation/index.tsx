@@ -75,11 +75,10 @@ const ConversationPage: Component<{}> = (props) => {
 			initialValue: undefined,
 		},
 	);
-	/* 
+
 	const visualization = createAsync(() =>
 		modality.visualization.listByContextFile(params.id),
 	);
-	*/
 
 	const assessment = createAsync(() => modality.assessment.getAllRanking());
 
@@ -147,6 +146,7 @@ const ConversationPage: Component<{}> = (props) => {
 							auditory() !== undefined &&
 							kinesthetic() !== undefined &&
 							assessment() !== undefined &&
+							visualization() !== undefined &&
 							scores() !== undefined
 						}
 					>
@@ -175,7 +175,7 @@ const ConversationPage: Component<{}> = (props) => {
 																		reading: reading,
 																		writing: writing,
 																		auditory: auditory,
-																		visualization: () => [],
+																		visualization: visualization,
 																		kinesthetic: kinesthetic,
 																	}
 																		[modality]()
@@ -191,7 +191,7 @@ const ConversationPage: Component<{}> = (props) => {
 																		reading: reading,
 																		writing: writing,
 																		auditory: auditory,
-																		visualization: () => [],
+																		visualization: visualization,
 																		kinesthetic: kinesthetic,
 																	}
 																		[modality]()
@@ -234,7 +234,7 @@ const ConversationPage: Component<{}> = (props) => {
 																		reading: reading,
 																		writing: writing,
 																		auditory: auditory,
-																		visualization: () => [],
+																		visualization: visualization,
 																		kinesthetic: kinesthetic,
 																	}
 																		[modality]()
@@ -250,7 +250,7 @@ const ConversationPage: Component<{}> = (props) => {
 																		reading: reading,
 																		writing: writing,
 																		auditory: auditory,
-																		visualization: () => [],
+																		visualization: visualization,
 																		kinesthetic: kinesthetic,
 																	}
 																		[modality]()

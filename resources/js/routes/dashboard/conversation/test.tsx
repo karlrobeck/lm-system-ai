@@ -45,6 +45,13 @@ const PreTestPage: Component<{}> = (props) => {
 		return undefined;
 	});
 
+	const visualization = createAsync(() => {
+		if (params.modality === "visualization") {
+			return modality.visualization.listByContextFile(params.id);
+		}
+		return undefined;
+	});
+
 	const auditory = createAsync(() => {
 		if (params.modality === "auditory") {
 			return modality.auditory.listByContextFile(params.id);
@@ -179,6 +186,38 @@ const PreTestPage: Component<{}> = (props) => {
 										placeholder="Your answer"
 									/>
 								</TextField>
+							</div>
+						)}
+					</For>
+					<Button>Submit Answer</Button>
+				</Show>
+				<Show when={visualization() !== undefined}>
+					<For
+						each={visualization().filter((q) => q.test_type === params.mode)}
+					>
+						{(question) => (
+							<div>
+								<img
+									class="rounded-md h-64 pb-4"
+									src={question.image_url}
+									alt="test"
+								/>
+								<div>
+									<span class="muted">{question.question_index}.</span>{" "}
+									{question.question}
+								</div>
+								<RadioGroup
+									name={`${question.question_index}`}
+									class="flex flex-col gap-2.5 p-4"
+								>
+									<For each={JSON.parse(question.choices)}>
+										{(choice) => (
+											<RadioGroupItem value={choice}>
+												<RadioGroupItemLabel>{choice}</RadioGroupItemLabel>
+											</RadioGroupItem>
+										)}
+									</For>
+								</RadioGroup>
 							</div>
 						)}
 					</For>

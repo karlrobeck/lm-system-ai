@@ -13,10 +13,6 @@ use App\Http\Controllers\AssessmentController;
 use App\Http\Controllers\ModalityKinestheticController;
 use App\Http\Controllers\ModalityReadingController;
 use App\Http\Controllers\ModalityWritingController;
-use App\Models\ModalityAuditory;
-use App\Models\ModalityKinesthetic;
-use App\Models\ModalityReading;
-use App\Models\ModalityVisualization;
 use App\Models\User as ModelsUser;
 use Illuminate\Http\Request;
 
@@ -37,6 +33,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/api/modality/writing/{mode}/{id}',[ModalityWritingController::class,'getWritingTest']);
     Route::get('/api/modality/auditory/{mode}/{id}',[ModalityAuditoryController::class,'getAuditoryTest']);
     Route::get('/api/modality/kinesthetic/{mode}/{id}',[ModalityKinestheticController::class,'getKinestheticTest']);
+    Route::get('/api/modality/visualization/{mode}/{id}',[ModalityVisualizationController::class,'getVisualizationTest']);
     // Route for fetching visualization tests
     Route::get('/visualization-test/{mode}/{id}', [ModalityVisualizationController::class, 'getVisualizationTest']);
     Route::get('/api/assessment/ranking',[AssessmentController::class,'ranking']);
