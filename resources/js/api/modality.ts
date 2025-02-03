@@ -73,6 +73,8 @@ export const modality = {
             });
             const payload = await response.json();
 
+            console.log(payload);
+
             return payload as AssessmentRanking[];
         },"assessmentGetAllRanking"),
     },

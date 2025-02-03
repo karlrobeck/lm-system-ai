@@ -24,6 +24,8 @@ export const getFileMetadataById = query(async (id: string) => {
     });
     const data = await response.json() as File;
 
+    console.log(data);
+
     reload({revalidate:modality.reading.listByContextFile.keyFor(data.id)});
     return data as File;
 }, "getFileMetadataById");

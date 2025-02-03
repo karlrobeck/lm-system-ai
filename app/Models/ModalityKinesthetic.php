@@ -8,4 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class ModalityKinesthetic extends Model
 {
     use HasFactory;
+
+    protected $fillable = [
+        'file_id',
+        'question',
+        'context_answer',
+        'question_index',
+        'test_type',
+    ];
 }

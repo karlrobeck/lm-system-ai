@@ -34,13 +34,11 @@ const ModalityCard = ({
 	title,
 	is_ready,
 	is_passed,
-	is_failed,
 	length,
 	link,
 }: {
 	title: string;
 	is_ready: boolean;
-	is_failed: boolean;
 	length: number;
 	link: string;
 	is_passed: boolean;
@@ -55,25 +53,10 @@ const ModalityCard = ({
 				<CardTitle>{title}</CardTitle>
 				<CardDescription>
 					<Show
-						when={is_ready && !is_failed}
+						when={is_ready}
 						fallback={
 							<div class="flex flex-row gap-2.5 items-center">
-								<Show
-									fallback={
-										<Show
-											fallback={
-												<>
-													<Loader2 size={16} class="animate-spin" />
-													<span>Test is not ready</span>
-												</>
-											}
-											when={is_failed}
-										>
-											<span>Failed</span>
-										</Show>
-									}
-									when={is_passed}
-								>
+								<Show fallback={<span>Test Unavaiable</span>} when={is_passed}>
 									<Check size={16} />
 									<span>Test passed</span>
 								</Show>
@@ -200,19 +183,18 @@ const ConversationPage: Component<{}> = (props) => {
 													return (
 														<Show when={a.modality === modality}>
 															<ModalityCard
-																is_failed={Boolean(a.is_failed) === true}
 																is_passed={
 																	scores().filter(
 																		(v) =>
-																			a.modality === v.modality &&
-																			(Boolean(a.is_failed) === false ||
-																				Boolean(v.is_passed) === true),
+																			v.modality === modality &&
+																			Boolean(a.is_failed) === false &&
+																			Boolean(v.is_passed) === true,
 																	).length === 1
 																}
 																is_ready={
 																	scores().filter(
 																		(v) =>
-																			a.rank === 1 &&
+																			Boolean(a.is_failed) === false &&
 																			Boolean(v.is_passed) !== true,
 																	).length === 1
 																}
@@ -259,20 +241,16 @@ const ConversationPage: Component<{}> = (props) => {
 												]}
 											>
 												{(modality) => {
-													const lowestRank = assessment()
-														.filter((v) => Boolean(v.pre_test_passed) === true)
-														.reduce(
-															(prev, curr) =>
-																prev.rank < curr.rank ? prev : curr,
-															{ rank: Number.POSITIVE_INFINITY },
-														);
 													return (
 														<Show when={a.modality === modality}>
 															<ModalityCard
 																is_passed={Boolean(a.post_test_passed)}
 																is_ready={
-																	lowestRank !== undefined &&
-																	lowestRank.rank === a.rank
+																	scores().filter(
+																		(v) =>
+																			v.modality === modality &&
+																			Boolean(v.is_passed) === true,
+																	).length === 1
 																}
 																title={
 																	modality.charAt(0).toUpperCase() +

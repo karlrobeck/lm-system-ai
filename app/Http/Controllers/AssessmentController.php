@@ -10,11 +10,10 @@ use Illuminate\Support\Facades\Auth;
 class AssessmentController extends Controller
 {
     public function store(Request $request) {
-
         // get user response
         $response = $request->json()->all();
 
-        $request_user = $request->user();
+        $request_user = Auth::guard('sanctum')->user();
 
         $db_user = User::query()->find($request_user->id);
 

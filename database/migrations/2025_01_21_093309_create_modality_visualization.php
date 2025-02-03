@@ -16,7 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('file_id');
             $table->foreign('file_id')->references('id')->on('files');
             $table->text('question');
-            $table->text('image_link');
+            $table->text('image_url')->nullable();
+            $table->text('image_prompt')->nullable();
             $table->json('choices');
             $table->integer('question_index');
             $table->text('correct_answer');
