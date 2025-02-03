@@ -10,6 +10,17 @@ class Scores extends Model
     /** @use HasFactory<\Database\Factories\ScoresFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'file_id',
+        'correct',
+        'test_type',
+        'modality',
+        'total',
+        'is_passed',
+        'rank'
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

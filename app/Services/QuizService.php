@@ -175,6 +175,44 @@ class QuizService
         }
     }
 
+    public function checkSubmission($system_prompt, $user_prompt)
+    {
+        $url = 'https://api.openai.com/v1/chat/completions';
+        $headers = [
+            'Content-Type'  => 'application/json',
+            'Authorization' => 'Bearer ' . $this->apiKey,
+        ];
+
+        $data = [
+            'model'    => 'gpt-4o',
+            'messages' => [
+                ['role' => 'system', 'content' => $system_prompt],
+                ['role' => 'user', 'content' => $user_prompt],
+            ],
+        ];
+
+        $response = Http::withHeaders($headers)->post($url, $data);
+
+        if ($response->failed()) {
+            Log::error('Failed to get response from OpenAI GPT API.', [
+                'status' => $response->status(),
+                'body'   => $response->body(),
+            ]);
+            return null;
+        }
+
+        $responseData = $response->json();
+        
+        if (isset($responseData['choices'][0]['message']['content'])) {
+            $assistant_reply = $responseData['choices'][0]['message']['content'];
+            return $assistant_reply;
+        } else {
+            Log::error('Unexpected response structure from GPT API.', [
+                'response' => $responseData,
+            ]);
+            return null;
+        }
+    }
 
     public function generateAssessment($user_prompt,$user,$file) {
         $url = 'https://api.openai.com/v1/chat/completions';

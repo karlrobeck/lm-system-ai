@@ -26,25 +26,33 @@ class ScoresController extends Controller
         return Scores::query()->with('user')->with('file')->where('user_id','=',$user->id)->where('file_id','=',$id)->get();
     }
 
-    public function store($request,$mode,$modality,$id) {
-
+    public function store($mode,$modality,$id) {
+        
+        
         $quiz_service = new QuizService();
-
+        
         $user = Auth::guard('sanctum')->user();
-
+        
         $file = Files::query()->where('id', $id)->where('owner_id', $user->id)->first();
-
+        
         if (!$file) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-
+        
         // lets get all of the json data from the request
-        $payload = $request->json()->all();
-
+        $payload = request()->json()->all();
+        
+        
         // send the data to the GPT. note: this is a stripped down json array that is stringified. you can directly send the json array to the GPT
         $answers_string = json_encode($payload);
-
-        $system_prompt = "You are a teacher. You are grading a student's test. Read the student's response and give a score from 0 to n based on this database of answers. \n\n";
+        
+        error_log($answers_string);
+        
+        $system_prompt = "You are a teacher. You are grading a student's test."
+            . "Returns a JSON object with the number of correct answers and the total number of answers. \n\n"
+            . "JSON Example: {\"correct\": 5, \"total\": 10, \"is_passed\": true} \n\n"
+            . "Read the student's response and give a score from 0 to n based on this database of answers. \n\n"
+            . "NOTE: only return JSON object not markdown";
 
         $gpt_response = null;
 
@@ -70,17 +78,21 @@ class ScoresController extends Controller
             . "\n\n---student answers---\n\n"
             . $answers_string;
 
-        $gpt_response = $quiz_service->getGPTResponse($system_prompt, $user_prompt);
+        $gpt_response = $quiz_service->checkSubmission($system_prompt, $user_prompt);
+        $gpt_response = json_decode($gpt_response, true);
 
-        Scores::factory()->create([
+        $score = Scores::create([
             'user_id' => $user->id,
             'file_id' => $file->id,
             'correct' => $gpt_response['correct'], // change this to the correct number of answers
             'total' => $gpt_response['total'], // change this to the total number of answers
             'test_type' => $mode,
             'modality' => $modality,
+            'rank' => 0, // implement me if ever
             'is_passed' => $gpt_response['is_passed'], // change this to false if the user failed 60% or less
         ]);
+
+        error_log(dump($score));
 
         return redirect('/dashboard');
     }

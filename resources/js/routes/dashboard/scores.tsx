@@ -21,20 +21,22 @@ const ScoresPage: Component<{}> = (props) => {
 					{user().name} - {user().email}
 				</span>
 			</div>
-			<For each={scores()}>
-				{(score) => (
-					<Card>
-						<CardHeader>
-							<CardTitle>
-								{score.file.name} - {score.modality}
-							</CardTitle>
-							<CardDescription>
-								{Boolean(score.is_passed) === true ? "Passed" : "Failed"}
-							</CardDescription>
-						</CardHeader>
-					</Card>
-				)}
-			</For>
+			<div class="grid grid-cols-1 gap-4 py-4">
+				<For each={scores()}>
+					{(score) => (
+						<Card>
+							<CardHeader>
+								<CardTitle>
+									{score.file.name} - {score.modality}
+								</CardTitle>
+								<CardDescription>
+									{score.is_passed ? "Passed" : "Failed"}
+								</CardDescription>
+							</CardHeader>
+						</Card>
+					)}
+				</For>
+			</div>
 		</Show>
 	);
 };

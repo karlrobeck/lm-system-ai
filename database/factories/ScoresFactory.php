@@ -23,7 +23,7 @@ class ScoresFactory extends Factory
             'correct' => $this->faker->numberBetween(0, 100),
             'total' => $this->faker->numberBetween(0, 100),
             'test_type' => $this->faker->randomElement(['pre', 'post']),
-            'modality' => $this->faker->randomElement(['auditory', 'reading', 'visualization', 'writing']),
+            'modality' => $this->faker->randomElement(['auditory', 'reading', 'visualization', 'writing','kinesthetic']),
             'created_at' => now(),
             'updated_at' => now(),
         ];

@@ -83,7 +83,14 @@ const PreTestPage: Component<{}> = (props) => {
 					{params.modality}
 				</h2>
 			</div>
-			<form class="space-y-5" action={submitAnswers} method="post">
+			<form
+				class="space-y-5"
+				onSubmit={(e) => {
+					e.preventDefault();
+					const formData = new FormData(e.currentTarget);
+					submitAnswers(formData, params.mode, params.modality, params.id);
+				}}
+			>
 				<Show when={reading() !== undefined}>
 					<div class="space-y-5">
 						<For each={reading().filter((q) => q.test_type === params.mode)}>
@@ -94,7 +101,7 @@ const PreTestPage: Component<{}> = (props) => {
 										{question.question}
 									</div>
 									<RadioGroup
-										name={`${question.question_index}`}
+										name={`${params.modality}-${params.mode}-${question.question_index}`}
 										class="flex flex-col gap-2.5 p-4"
 									>
 										<For each={JSON.parse(question.choices)}>
@@ -109,7 +116,6 @@ const PreTestPage: Component<{}> = (props) => {
 							)}
 						</For>
 					</div>
-					<Button>Submit Answer</Button>
 				</Show>
 				<Show when={writing() !== undefined}>
 					<For each={writing().filter((q) => q.test_type === params.mode)}>
@@ -121,14 +127,13 @@ const PreTestPage: Component<{}> = (props) => {
 								</div>
 								<TextField class="m-4">
 									<TextFieldTextArea
-										name={`${question.question_index}`}
+										name={`${params.modality}-${params.mode}-${question.question_index}`}
 										placeholder="Your answer"
 									/>
 								</TextField>
 							</div>
 						)}
 					</For>
-					<Button>Submit Answer</Button>
 				</Show>
 				<Show when={auditory() !== undefined}>
 					<For each={auditory().filter((q) => q.test_type === params.mode)}>
@@ -156,7 +161,7 @@ const PreTestPage: Component<{}> = (props) => {
 									</Button>
 								</div>
 								<RadioGroup
-									name={`${question.question_index}`}
+									name={`${params.modality}-${params.mode}-${question.question_index}`}
 									class="flex flex-col gap-2.5 p-4"
 								>
 									<For each={JSON.parse(question.choices)}>
@@ -170,7 +175,6 @@ const PreTestPage: Component<{}> = (props) => {
 							</div>
 						)}
 					</For>
-					<Button>Submit Answer</Button>
 				</Show>
 				<Show when={kinesthetic() !== undefined}>
 					<For each={kinesthetic().filter((q) => q.test_type === params.mode)}>
@@ -189,7 +193,6 @@ const PreTestPage: Component<{}> = (props) => {
 							</div>
 						)}
 					</For>
-					<Button>Submit Answer</Button>
 				</Show>
 				<Show when={visualization() !== undefined}>
 					<For
@@ -207,7 +210,7 @@ const PreTestPage: Component<{}> = (props) => {
 									{question.question}
 								</div>
 								<RadioGroup
-									name={`${question.question_index}`}
+									name={`${params.modality}-${params.mode}-${question.question_index}`}
 									class="flex flex-col gap-2.5 p-4"
 								>
 									<For each={JSON.parse(question.choices)}>
@@ -221,8 +224,8 @@ const PreTestPage: Component<{}> = (props) => {
 							</div>
 						)}
 					</For>
-					<Button>Submit Answer</Button>
 				</Show>
+				<Button type="submit">Submit Answer</Button>
 			</form>
 		</article>
 	);

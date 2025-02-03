@@ -58,24 +58,26 @@ export const uploadFile = action(async (formData: FormData) => {
     revalidate("getCurrentUser");
 })
 
-export const submitAnswers = action(async (formData:FormData) => {
+export const submitAnswers = query(async (formData:FormData,mode:string,modality:string,id:string) => {
     const token = localStorage.getItem("token");
     const csrfToken = document.querySelector('meta[name="csrf-token"]')
     .getAttribute("content");
-    fetch("/api/scores/submit", {
+    const formDataObj = Object.fromEntries(formData.entries());
+    fetch(`/api/scores/submit/${mode}/${modality}/${id}`, {
         method: "POST",
         headers: {
             Authorization: `Bearer ${token}`,
             "X-CSRF-TOKEN": csrfToken,
             "Content-Type": "application/json",
         },
-        body: JSON.stringify(Array.from(formData.entries())),
+        body: JSON.stringify(formDataObj),
     }).then((response) => {
         if(response.ok) {
             showToast({
                 title: "Answers submitted",
                 description: "Your answers have been submitted successfully",
             });
+            window.location.href = "/dashboard/scores";
         } else {
             showToast({
                 title: "Answers submission failed",
@@ -83,4 +85,4 @@ export const submitAnswers = action(async (formData:FormData) => {
             });
         }
     });
-}) 
+},"submitAnswers"); 

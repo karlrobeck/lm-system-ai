@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('total');
             $table->foreignId('file_id')->references('id')->on('files');
             $table->foreignId('user_id')->references('id')->on('users');
-            $table->integer('rank');
+            $table->integer('rank')->nullable();
             $table->boolean('is_passed')->default(false);
             $table->enum('test_type',['pre','post']);
             $table->enum('modality',['auditory','reading','visualization','writing','kinesthetic']);
