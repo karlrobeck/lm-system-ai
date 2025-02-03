@@ -36,8 +36,8 @@ class FileController extends Controller
         // Parse file content (if PDF, extract text; if plain text, read directly)
         $content = $this->parseFileContent($path);
 
-        // Create a custom prompt to generate study notes and test questions
-        $prompt = "create a keynotes for this content. only output markdown:\n\n" 
+        // Create a custom prompt to generate study notes and test questions (15 questions per test)
+        $prompt = "Using ChatGPT, generate a concise summary and key study notes, then create 15 test questions for both the pre-test and post-test based on the following text:\n\n" 
             . $content;
         
         // Generate study notes via ChatGPT
