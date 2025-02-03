@@ -40,5 +40,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::post("/api/assessment/submit",[AssessmentController::class,'store']);
     Route::get('/api/scores/',[ScoresController::class,'index']);
     Route::get('/api/scores/{id}',[ScoresController::class,'show']);
-    Route::post('/api/scores/submit',[ScoresController::class,'show']);
+    Route::post('/api/scores/submit/{mode}/{modality}/{id}',[ScoresController::class,'store']);
 });

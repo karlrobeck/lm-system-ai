@@ -8,7 +8,7 @@ import {
 	Switch,
 	type Component,
 } from "solid-js";
-import { getFileMetadataById } from "~/api/file";
+import { getFileMetadataById, submitAnswers } from "~/api/file";
 import {
 	type Auditory,
 	modality,
@@ -83,7 +83,7 @@ const PreTestPage: Component<{}> = (props) => {
 					{params.modality}
 				</h2>
 			</div>
-			<form class="space-y-5">
+			<form class="space-y-5" action={submitAnswers} method="post">
 				<Show when={reading() !== undefined}>
 					<div class="space-y-5">
 						<For each={reading().filter((q) => q.test_type === params.mode)}>

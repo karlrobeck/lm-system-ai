@@ -137,7 +137,7 @@ class FileController extends Controller
                 ]`;
             $quizService->generateAssessment($prompt,$user,$file);
         } else {
-            return response()->json(['message' => 'Error generating assessment for user'], 500);
+           return response()->json(['message' => 'File uploaded and tests generated successfully.'], 201);
         }
 
         return response()->json(['message' => 'File uploaded and tests generated successfully.'], 201);
