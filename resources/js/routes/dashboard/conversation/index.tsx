@@ -140,14 +140,7 @@ const ConversationPage: Component<{}> = (props) => {
 					</TabsList>
 					<Show
 						when={
-							file() !== undefined ||
-							reading() !== undefined ||
-							writing() !== undefined ||
-							auditory() !== undefined ||
-							kinesthetic() !== undefined ||
-							assessment() !== undefined ||
-							visualization() !== undefined ||
-							scores() !== undefined
+							file() !== undefined
 						}
 					>
 						<TabsContent value="preTest">
