@@ -44,28 +44,18 @@ const ModalityCard = ({
 	is_passed: boolean;
 }) => {
 	return (
-		<Card>
+		<Card classList={{ "opacity-50": !is_ready }}>
 			<CardHeader>
 				<CardTitle>{title}</CardTitle>
 				<CardDescription>
-					<Show
-						when={true}
-						fallback={
-							<div class="flex flex-row gap-2.5 items-center">
-								<Show fallback={<span>Test Unavaiable</span>} when={is_passed}>
-									<Check size={16} />
-									<span>Test passed</span>
-								</Show>
-							</div>
-						}
-					>
+					<Show when={is_ready} fallback={<>No Questions Avaiable</>}>
 						Questions: {length}
 					</Show>
 				</CardDescription>
 			</CardHeader>
-			<Show when={true}>
+			<Show when={is_ready}>
 				<CardFooter>
-					<Button as={A} href={link}>
+					<Button disabled={!is_ready} as={A} href={link}>
 						Start test
 					</Button>
 				</CardFooter>
@@ -179,20 +169,18 @@ const ConversationPage: Component<{}> = (props) => {
 													return (
 														<Show when={a.modality === modality}>
 															<ModalityCard
-																is_passed={
-																	scores().filter(
-																		(v) =>
-																			v.modality === modality &&
-																			Boolean(a.is_failed) === false &&
-																			Boolean(v.is_passed) === true,
-																	).length === 1
-																}
+																is_passed={true}
 																is_ready={
-																	scores().filter(
-																		(v) =>
-																			Boolean(a.is_failed) === false &&
-																			Boolean(v.is_passed) !== true,
-																	).length === 1
+																	{
+																		reading: reading,
+																		writing: writing,
+																		auditory: auditory,
+																		visualization: () => [],
+																		kinesthetic: kinesthetic,
+																	}
+																		[modality]()
+																		?.filter((v) => v.test_type === "pre")
+																		?.length >= 1
 																}
 																title={
 																	modality.charAt(0).toUpperCase() +
@@ -240,13 +228,18 @@ const ConversationPage: Component<{}> = (props) => {
 													return (
 														<Show when={a.modality === modality}>
 															<ModalityCard
-																is_passed={Boolean(a.post_test_passed)}
+																is_passed={true}
 																is_ready={
-																	scores().filter(
-																		(v) =>
-																			v.modality === modality &&
-																			Boolean(v.is_passed) === true,
-																	).length === 1
+																	{
+																		reading: reading,
+																		writing: writing,
+																		auditory: auditory,
+																		visualization: () => [],
+																		kinesthetic: kinesthetic,
+																	}
+																		[modality]()
+																		?.filter((v) => v.test_type === "post")
+																		?.length >= 1
 																}
 																title={
 																	modality.charAt(0).toUpperCase() +

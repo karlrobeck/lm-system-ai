@@ -188,6 +188,7 @@ export const modality = {
                 // join
             const preTest = await preTestResponse.json() as Reading[];
             const postTest = await postTestResponse.json() as Reading[];
+            console.log(preTest, postTest);
             return [...preTest, ...postTest] as Reading[];
             } catch (e) {
                 console.error(e);
