@@ -28,7 +28,7 @@ class AssessmentController extends Controller
 
     public function ranking() {
         // get the current user
-        $user = Auth::guard('sanctum')->user();$request_user = request()->user();
+        $user = Auth::guard('sanctum')->user();
         
         // get the user from the database
         $db_user = User::query()->find($user->id);

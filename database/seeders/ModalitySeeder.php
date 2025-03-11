@@ -67,7 +67,6 @@ class ModalitySeeder extends Seeder
         for ($i = 1; $i <= 10; $i++) {
 
             $test_type = $i > 5 ? 'post' : 'pre';
-
             ModalityReading::factory()->create([
                 'question_index' => $i,
                 'correct_answer' => 'Abuja',

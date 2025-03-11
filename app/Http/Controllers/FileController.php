@@ -35,38 +35,11 @@ class FileController extends Controller
 
         // Parse file content (if PDF, extract text; if plain text, read directly)
         $content = $this->parseFileContent($path);
-
-        // Create a custom prompt to generate study notes and test questions (15 questions per test)
-        $prompt = "Using ChatGPT, generate a concise summary and key study notes, then create 15 test questions for both the pre-test and post-test based on the following text:\n\n" 
-            . $content;
         
         // Generate study notes via ChatGPT
-        $studyNotes = $quizService->generateStudyNotes($prompt);
+        $studyNotes = $quizService->generateStudyNotes($content);
         
-        // Generate test responses for each modality and test type using the same prompt
-        $modalities = ['reading', 'writing', 'auditory', 'kinesthetic', 'visualization'];
-        $testTypes = ['pre', 'post'];
-        $allResponses = [];
-
-        foreach ($modalities as $modality) {
-            foreach ($testTypes as $test_type) {
-                $method = "create_{$modality}_modality";
-                if (method_exists($quizService, $method)) {
-                    $response = $quizService->$method($prompt, $test_type);
-                    if ($response === null) {
-                        return response()->json([
-                            'error' => "Failed to generate {$modality} {$test_type}-test."
-                        ], 500);
-                    }
-                    $allResponses["{$modality}_{$test_type}_test"] = $response;
-                } else {
-                    Log::warning("Method {$method} does not exist in QuizService.");
-                }
-            }
-        }
-
-        // Save the file metadata along with the generated study notes to the database
-        $metadata = Files::create([
+        $file = Files::create([
             'name'         => $file->getClientOriginalName(),
             'path'         => $path,
             'study_notes'  => $studyNotes, // Generated study notes from ChatGPT
@@ -75,67 +48,11 @@ class FileController extends Controller
             'owner_id'     => $user->id,
         ]);
 
-        // Map response keys to model classes (example mapping for visualization tests)
-        $responseToModelMap = [
-            'visualization_pre_test'  => ModalityVisualization::class,
-            'visualization_post_test' => ModalityVisualization::class,
-            'auditory_pre_test'       => ModalityAuditory::class,
-            'auditory_post_test'      => ModalityAuditory::class,
-            'kinesthetic_pre_test'    => ModalityKinesthetic::class,
-            'kinesthetic_post_test'   => ModalityKinesthetic::class,
-            'reading_pre_test'        => ModalityReading::class,
-            'reading_post_test'       => ModalityReading::class,
-            'writing_pre_test'        => ModalityWriting::class,
-            'writing_post_test'       => ModalityWriting::class,
-        ];
-
-        // Loop through all responses and save them accordingly
-        foreach ($allResponses as $responseKey => $responseData) {
-            if (isset($responseToModelMap[$responseKey])) {
-                $model = $responseToModelMap[$responseKey];
-                $data = [
-                    'file_id'        => $metadata->id,
-                    'question_index' => $responseData['question_index'] ?? null,
-                    'question'       => $responseData['question'] ?? null,
-                    'test_type'      => $responseData['test_type'] ?? null,
-                ];
-
-                // Determine modality from the response key
-                $modality = explode('_', $responseKey)[0];
-
-                if (in_array($modality, ['reading','auditory'])) {
-                    $data['choices']        = isset($responseData['choices']) ? json_encode($responseData['choices']) : null;
-                    $data['correct_answer'] = $responseData['correct_answer'] ?? null;
-                }
-
-                if (in_array($modality, ['writing', 'kinesthetic'])) {
-                    $data['context_answer'] = $responseData['context_answer'] ?? null;
-                }
-
-                if ($modality === 'visualization') {
-                    $data['image_prompt']   = $responseData['image_prompt'] ?? null;
-                    $data['image_url']      = $responseData['image_url'] ?? null;
-                    $data['choices']        = isset($responseData['choices']) ? json_encode($responseData['choices']) : null;
-                    $data['correct_answer'] = $responseData['correct_answer'] ?? null;
-                }
-
-                $model::create($data);
-            } else {
-                Log::warning("No model mapped for response key: {$responseKey}");
-            }
-        }
+        $quizService->generate_test($content, $user, $file, 'pre');
+        $quizService->generate_test($content, $user, $file, 'post');
 
         if ($user['has_assessment'] === true) {
-            $prompt = "based on this user's JSON response. return a json object with the following. \n NOTE: do not tie the result because it will confuse the backend. ONLY RETURN JSON no other messages\n"
-                . `-- GPT JSON response
-                    [
-                    {
-                        "rank":"<rank of the modality>",
-                        "name":"<name of the modality>", // must be one of the following: reading, writing, auditory, kinesthetic, visualization
-                        "message":"<GPT message that will tell the user why its in this rank>"
-                    }
-                ]`;
-            $quizService->generateAssessment($prompt,$user,$file);
+            $quizService->generateAssessment($user,$file);
         } else {
            return response()->json(['message' => 'File uploaded and tests generated successfully.'], 201);
         }

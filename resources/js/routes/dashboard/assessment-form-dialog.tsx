@@ -422,7 +422,14 @@ const AssessmentFormDialog: Component<{}> = (props) => {
 								/>
 							)}
 						</For>
-						<Button type="submit">Submit</Button>
+						<Button
+							type="submit"
+							onClick={() =>
+								document.getElementById("assessment-form-dialog").click()
+							}
+						>
+							Submit
+						</Button>
 					</form>
 				</DialogContent>
 			</Dialog>
