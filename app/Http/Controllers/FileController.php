@@ -53,8 +53,22 @@ class FileController extends Controller
 
         if ($user['has_assessment'] === true) {
             $quizService->generateAssessment($user,$file);
-        } else {
-           return response()->json(['message' => 'File uploaded and tests generated successfully.'], 201);
+            $db_user = User::query()->find($user->id);
+            $db_user['has_assessment'] = false;
+            $db_user->save();
+        } 
+        
+        // generate images base on the file id
+        $visualization = ModalityVisualization::query()->where('file_id', '=', $file->id)->get();
+
+        foreach ($visualization as $value) {
+            try {
+                $value->image_url = $quizService->generateImage($value->image_prompt);
+                $value->save();
+            } catch (\Exception $e) {
+                Log::error('Error generating image for visualization modality');
+                continue;
+            }
         }
 
         return response()->json(['message' => 'File uploaded and tests generated successfully.'], 201);

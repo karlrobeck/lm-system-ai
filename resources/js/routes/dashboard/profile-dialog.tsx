@@ -1,15 +1,14 @@
-import { User } from "lucide-solid";
 import {
 	type Component,
 	createResource,
 	createSignal,
+	For,
 	Match,
 	Show,
 	Switch,
 } from "solid-js";
-import { getCurrentUser, getUserById } from "~/api/user";
+import { getCurrentUser, getRanking } from "~/api/user";
 import { Avatar, AvatarFallback } from "~/components/ui/avatar";
-import { Button } from "~/components/ui/button";
 import {
 	Dialog,
 	DialogContent,
@@ -18,7 +17,6 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "~/components/ui/dialog";
-import Input from "~/components/ui/input";
 import {
 	Table,
 	TableBody,
@@ -31,6 +29,7 @@ import {
 const ProfileDialog: Component<{}> = (props) => {
 	const [user] = createResource(() => getCurrentUser());
 	const [updatePassword, setUpdatePassword] = createSignal(true);
+	const [ranking] = createResource(() => getRanking());
 
 	return (
 		<Dialog>
@@ -69,6 +68,37 @@ const ProfileDialog: Component<{}> = (props) => {
 									</TableRow>
 								</TableBody>
 							</Table>
+						</div>
+					</div>
+					<div class="space-y-5">
+						<div>
+							<div class="border-b border-border">
+								<h4 class="heading-4">Ranking</h4>
+								<span class="lead small">AI Evaluation</span>
+							</div>
+
+							<Show when={ranking.state === "ready"}>
+								<Table class="border">
+									<TableHeader>
+										<TableRow>
+											<TableHead>Modality</TableHead>
+											<TableHead>Rank 1 - 5</TableHead>
+											<TableHead>Message</TableHead>
+										</TableRow>
+									</TableHeader>
+									<TableBody>
+										<For each={ranking()}>
+											{(rank) => (
+												<TableRow>
+													<TableCell>{rank.modality}</TableCell>
+													<TableCell>{rank.rank}</TableCell>
+													<TableCell>{rank.message}</TableCell>
+												</TableRow>
+											)}
+										</For>
+									</TableBody>
+								</Table>
+							</Show>
 						</div>
 					</div>
 				</DialogContent>

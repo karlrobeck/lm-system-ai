@@ -30,6 +30,7 @@ const ScoresPage: Component<{}> = (props) => {
 									{score.file.name} - {score.modality}
 								</CardTitle>
 								<CardDescription>
+									{score.correct} / {score.total} -{" "}
 									{score.is_passed ? "Passed" : "Failed"}
 								</CardDescription>
 							</CardHeader>

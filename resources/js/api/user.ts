@@ -108,3 +108,22 @@ export const logout = action(async () => {
     localStorage.removeItem("token");
     throw redirect("/login");
 });
+
+export const getRanking = query(async () => {
+    const token = localStorage.getItem("token");
+    const response = await fetch("/api/assessment/ranking", {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    const data = await response.json();
+    return data as {
+        id: number;
+        user_id: number;
+        file_id: number;
+        rank: number;
+        is_failed: boolean;
+        modality: 'reading' | 'writing' | 'auditory' | 'kinesthetic' | 'visualization';
+        message: string;
+    }[];
+},"getRanking")

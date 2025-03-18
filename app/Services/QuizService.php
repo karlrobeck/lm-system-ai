@@ -267,31 +267,45 @@ class QuizService
 
     public function checkSubmission($system_prompt, $user_prompt)
     {
-        $url = 'https://api.openai.com/v1/chat/completions';
-        $headers = [
-            'Content-Type'  => 'application/json',
-            'Authorization' => 'Bearer ' . $this->apiKey,
+
+        $schema = [
+            "name" => "check_response",
+            "strict" => true,
+            "schema" => [
+                "type" => "object",
+                "properties" => [
+                    "correct" => [
+                        "type" => "integer"
+                    ],
+                    "total" => [
+                        "type" => "integer"
+                    ],
+                    "is_passed" => [
+                        "type" => "boolean"
+                    ],
+                ],
+                "required" => [
+                    "correct",
+                    "total",
+                    "is_passed"
+                ],
+                "additionalProperties" => false
+            ]
         ];
 
-        $data = [
+        $response = $this->client->chat()->create([
             'model'    => 'gpt-4o-2024-08-06',
             'messages' => [
                 ['role' => 'system', 'content' => $system_prompt],
-                ['role' => 'user', 'content' => $user_prompt],
+                ['role' => 'user', 'content' => $user_prompt]
             ],
-        ];
+            'response_format' => [
+                'type' => 'json_schema',
+                'json_schema' => $schema
+            ]
+        ]);
 
-        $response = Http::withHeaders($headers)->post($url, $data);
-
-        if ($response->failed()) {
-            Log::error('Failed to get response from OpenAI GPT API.', [
-                'status' => $response->status(),
-                'body'   => $response->body(),
-            ]);
-            return null;
-        }
-
-        $responseData = $response->json();
+        $responseData = $response;
 
         if (isset($responseData['choices'][0]['message']['content'])) {
             $assistant_reply = $responseData['choices'][0]['message']['content'];
@@ -321,28 +335,30 @@ class QuizService
         ';
 
         $jsonSchema =  [
-            "type" => "array",
-            "items" => [
-                [
-                    "type" => "object",
-                    "properties" => [
-                        "name" => [
-                            "type" => "string"
+            "name" => "assessment_response",
+            "strict" => true,
+            "schema" => [
+                "type" => "array",
+                "items" => [
+                    [
+                        "type" => "object",
+                        "properties" => [
+                            "name" => [
+                                "type" => "string"
+                            ],
+                            "rank" => [
+                                "type" => "string"
+                            ],
+                            "message" => [
+                                "type" => "string"
+                            ],
                         ],
-                        "rank" => [
-                            "type" => "string"
+                        "required" => [
+                            "name",
+                            "rank",
+                            "message"
                         ],
-                        "message" => [
-                            "type" => "string"
-                        ],
-                        'modality' => [
-                            'type' => 'string'
-                        ]
-                    ],
-                    "required" => [
-                        "modality",
-                        "rank",
-                        "message"
+                        "additionalProperties" => false,
                     ]
                 ]
             ]
@@ -391,39 +407,23 @@ class QuizService
         return $responseData;
     }
 
-    private function generateImage($image_prompt)
+    public function generateImage(string $image_prompt)
     {
-        $url = 'https://api.openai.com/v1/images/generations';
-
-        $headers = [
-            'Content-Type'  => 'application/json',
-            'Authorization' => 'Bearer ' . $this->apiKey,
-        ];
-
-        $data = [
+        $response = $this->client->images()->create([
+            'model' => 'dall-e-2',
             'prompt' => $image_prompt,
             'n'      => 1,
             'size'   => '512x512',
-        ];
+            'response_format' => 'url',
+        ]);
 
-        $response = Http::withHeaders($headers)->post($url, $data);
+        $responseData = $response['data'];
 
-        if ($response->failed()) {
-            Log::error('Failed to get response from OpenAI DALL·E API.', [
-                'status' => $response->status(),
-                'body'   => $response->body(),
-            ]);
-            return null;
-        }
+        Log::info('Generated image', ['response' => $responseData]);
 
-        $responseData = $response->json();
-
-        if (isset($responseData['data'][0]['url'])) {
-            return $responseData['data'][0]['url'];
+        if (isset($responseData[0]['url'])) {
+            return $responseData[0]['url'];
         } else {
-            Log::error('Unexpected response structure from DALL·E API.', [
-                'response' => $responseData,
-            ]);
             return null;
         }
     }
