@@ -24,6 +24,8 @@ class QuizService
     {
         $this->apiKey = env('OPENAI_API_KEY');
 
+        Log::info('OpenAI API key', ['key' => $this->apiKey]);
+
         if (!$this->apiKey) {
             throw new \Exception('OpenAI API key not set.');
         }
@@ -318,7 +320,7 @@ class QuizService
         }
     }
 
-    public function generateAssessment(User $user, Files $file)
+    public function generateAssessment(User $user)
     {
 
         $prompt = '
@@ -338,29 +340,36 @@ class QuizService
             "name" => "assessment_response",
             "strict" => true,
             "schema" => [
-                "type" => "array",
-                "items" => [
-                    [
-                        "type" => "object",
-                        "properties" => [
-                            "name" => [
-                                "type" => "string"
+                "type" => "object",
+                "properties" => [
+                    "ranks" => [
+                        "type" => "array",
+                        "items" => [
+                            "type" => "object",
+                            "properties" => [
+                                "name" => [
+                                    "type" => "string"
+                                ],
+                                "rank" => [
+                                    "type" => "integer"
+                                ],
+                                "message" => [
+                                    "type" => "string"
+                                ]
                             ],
-                            "rank" => [
-                                "type" => "string"
+                            "required" => [
+                                "name",
+                                "rank",
+                                "message"
                             ],
-                            "message" => [
-                                "type" => "string"
-                            ],
-                        ],
-                        "required" => [
-                            "name",
-                            "rank",
-                            "message"
-                        ],
-                        "additionalProperties" => false,
+                            "additionalProperties" => false
+                        ]
                     ]
-                ]
+                ],
+                "required" => [
+                    "ranks"
+                ],
+                "additionalProperties" => false
             ]
         ];
 
@@ -378,10 +387,9 @@ class QuizService
 
         $responseData = json_decode($response['choices'][0]['message']['content'], true);
 
-        foreach ($responseData as $data) {
+        foreach ($responseData['ranks'] as $data) {
             Assessment::create([
                 'user_id' => $user->id,
-                'file_id' => $file->id,
                 'modality' => $data['name'],
                 'rank' => $data['rank'],
                 'message' => $data['message']

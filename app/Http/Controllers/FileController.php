@@ -35,10 +35,10 @@ class FileController extends Controller
 
         // Parse file content (if PDF, extract text; if plain text, read directly)
         $content = $this->parseFileContent($path);
-        
+
         // Generate study notes via ChatGPT
         $studyNotes = $quizService->generateStudyNotes($content);
-        
+
         $file = Files::create([
             'name'         => $file->getClientOriginalName(),
             'path'         => $path,
@@ -52,22 +52,33 @@ class FileController extends Controller
         $quizService->generate_test($content, $user, $file, 'post');
 
         if ($user['has_assessment'] === true) {
-            $quizService->generateAssessment($user,$file);
+            $quizService->generateAssessment($user, $file);
             $db_user = User::query()->find($user->id);
             $db_user['has_assessment'] = false;
             $db_user->save();
-        } 
-        
+        }
+
         // generate images base on the file id
         $visualization = ModalityVisualization::query()->where('file_id', '=', $file->id)->get();
 
-        foreach ($visualization as $value) {
-            try {
-                $value->image_url = $quizService->generateImage($value->image_prompt);
-                $value->save();
-            } catch (\Exception $e) {
-                Log::error('Error generating image for visualization modality');
-                continue;
+        $index = 0;
+        while ($index < count($visualization)) {
+            $value = $visualization[$index];
+            $retry = 0;
+            while ($retry < 3) {
+                try {
+                    $value->image_url = $quizService->generateImage($value->image_prompt);
+                    $value->save();
+                    $index++; // Move to the next index if save is successful
+                    break; // Exit the retry loop
+                } catch (\Exception $e) {
+                    Log::error('Error generating image for visualization modality, retrying...');
+                    $retry++;
+                }
+            }
+            if ($retry == 3) {
+                Log::error('Failed to generate image after 3 attempts, moving to next item.');
+                $index++; // Forcefully move to the next index after 3 retries
             }
         }
 
@@ -84,12 +95,12 @@ class FileController extends Controller
      */
     private function parseFileContent($filePath)
     {
-        $mimeType = Storage::disk('public')->mimeType($filePath);
+        $mimeType = \Illuminate\Support\Facades\File::mimeType(storage_path('app/public/' . $filePath));
         // If the file is plain text, return its content directly
         if (strpos($mimeType, 'text') !== false) {
             return Storage::disk('public')->get($filePath);
         }
-        
+
         // If the file is a PDF, extract text using the PDF parser
         if ($mimeType === 'application/pdf') {
             $parser = new Parser();

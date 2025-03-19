@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Assessment;
 use App\Models\User;
+use App\Services\QuizService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -11,16 +12,19 @@ class AssessmentController extends Controller
 {
     public function store(Request $request) {
         // get user response
-        $response = $request->json()->all();
-
         $request_user = Auth::guard('sanctum')->user();
+
+        $quizService = new QuizService();
+
+        $response = $request->json()->all();
 
         $db_user = User::query()->find($request_user->id);
 
         $db_user['has_assessment'] = true;
-        $db_user['assessment_content'] = $response;
-
+        $db_user['assessment_content'] = json_encode($response);
         $db_user->save();
+        
+        $quizService->generateAssessment($db_user);
         
         // redirect to the dashboard
         return redirect('/dashboard');

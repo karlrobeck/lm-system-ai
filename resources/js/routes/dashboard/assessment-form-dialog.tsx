@@ -412,7 +412,11 @@ const AssessmentFormDialog: Component<{}> = (props) => {
 							not apply.
 						</DialogDescription>
 					</DialogHeader>
-					<form method="post" action={assessmentFormAction}>
+					<form
+						method="post"
+						action={assessmentFormAction}
+						enctype="multipart/form-data"
+					>
 						<For each={FORM_QUESTIONS}>
 							{(question, index) => (
 								<FormQuestion

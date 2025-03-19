@@ -17,15 +17,9 @@ class TestTrackingSeeder extends Seeder
     {
         $user = User::query()->find(1);
         $file = Files::query()->where('owner_id','=', $user->id)->first();
-        $assessment = Assessment::query()->where('rank','=',1)->where('user_id','=',$user->id)->where('file_id','=',$file->id)->first();
-
-        $assessment['is_failed'] = false;
-
-        $assessment->save();
 
         Scores::factory()->create([
             'user_id' => $user->id,
-            'file_id' => $file->id,
             'correct' => 6,
             'total' => 10,
             'test_type' => 'pre',
