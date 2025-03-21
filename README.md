@@ -91,6 +91,7 @@ To get started with Laravel, follow these steps:
 4. **Configure your `.env` file:**
   ```env
   OPENAI_API_KEY=your-openai-api-key
+  JWT_SECRET=your-jwt-secret
   ```
 
 5. **Run database migrations:**
