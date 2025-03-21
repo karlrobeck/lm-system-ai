@@ -64,3 +64,49 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Installation
+
+To get started with Laravel, follow these steps:
+
+1. **Clone the repository:**
+  ```bash
+  git clone https://github.com/karlrobeck/lm-system-ai.git
+  cd lm-system-ai
+  ```
+
+2. **Install dependencies:**
+  ```bash
+  composer install
+  npm install
+  npm run dev
+  ```
+
+3. **Set up environment variables:**
+  ```bash
+  cp .env.example .env
+  php artisan key:generate
+  ```
+
+4. **Configure your `.env` file:**
+  ```env
+  OPENAI_API_KEY=your-openai-api-key
+  ```
+
+5. **Run database migrations:**
+  ```bash
+  php artisan migrate:fresh
+  ```
+
+6. **Install frontend dependencies:**
+  ```bash
+  npm install
+  npm run build
+  ```
+
+7. **Serve the application:**
+  ```bash
+  php artisan serve
+  ```
+
+Your Laravel application should now be up and running on `http://localhost:8000`.
