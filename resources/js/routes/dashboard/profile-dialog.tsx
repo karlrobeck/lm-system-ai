@@ -76,7 +76,6 @@ const ProfileDialog: Component<{}> = (props) => {
 								<h4 class="heading-4">Ranking</h4>
 								<span class="lead small">AI Evaluation</span>
 							</div>
-
 							<Show when={ranking.state === "ready"}>
 								<Table class="border">
 									<TableHeader>

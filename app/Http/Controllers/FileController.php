@@ -3,11 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Files;
-use App\Models\ModalityAuditory;
-use App\Models\ModalityKinesthetic;
-use App\Models\ModalityReading;
 use App\Models\ModalityVisualization;
-use App\Models\ModalityWriting;
 use App\Models\User;
 use App\Services\QuizService;
 use Illuminate\Http\Request;

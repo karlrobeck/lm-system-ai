@@ -42,7 +42,6 @@ class ScoresController extends Controller
         // lets get all of the json data from the request
         $payload = request()->json()->all();
         
-        
         // send the data to the GPT. note: this is a stripped down json array that is stringified. you can directly send the json array to the GPT
         $answers_string = json_encode($payload);
         
